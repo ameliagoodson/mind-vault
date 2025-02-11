@@ -26,3 +26,4 @@ dist-ssr
 # Ignore the build/dist folder
 build/
 dist/
+src/firebase.js
