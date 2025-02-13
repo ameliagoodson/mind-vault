@@ -7,15 +7,20 @@ const NavBar = () => {
   const { user } = useAuth(); // Get logged-in user
 
   return (
-    <nav className="p-4 bg-gray-800 text-white flex justify-between">
+    <nav>
       <div>
         <Link to="/" className="mr-4">
           Home
         </Link>
         {user && (
-          <Link to="/dashboard" className="mr-4">
-            Dashboard
-          </Link>
+          <div>
+            <Link to="/dashboard" className="mr-4">
+              Dashboard
+            </Link>
+            <Link to="/study" className="mr-4">
+              Study
+            </Link>
+          </div>
         )}
       </div>
       <div>{user ? <LogoutButton /> : <Link to="/login">Login</Link>}</div>
