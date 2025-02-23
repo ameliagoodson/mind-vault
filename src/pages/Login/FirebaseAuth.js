@@ -1,14 +1,26 @@
 // FirebaseAuth.js
-import { auth } from "../../firebase"; // ✅ Import auth from firebase.js
+// Sets up how users sign in
+// Creates and manages Firebase UI login screen
+// Handles authentication state changes (checks if user is logged in)
+// Provides a function to log the user out
+
+import { auth } from "../../firebase";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
-import { EmailAuthProvider, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 
+// Sets up Google & Email/Password login via Firebase UI.
+// The uiConfig object is a configuration object that Firebase UI expects. It contains settings for how the authentication UI behaves.
 const uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function (authResult) {
       console.log("Sign-in success:", authResult);
-      return false; // Prevents automatic redirect
+      return false; // Prevents automatic redirect after login
     },
     signInFailure: function (error) {
       console.error("Sign-in error:", error);
@@ -33,6 +45,7 @@ const uiConfig = {
 
 let uiInstance = null;
 
+// startFirebaseUI is called in LoginUI
 const startFirebaseUI = (elementId) => {
   const element = document.querySelector(elementId);
   if (!element) {
@@ -40,6 +53,7 @@ const startFirebaseUI = (elementId) => {
     return;
   }
 
+  // check whether a uiInstance already exists. If not, create one.
   try {
     if (!uiInstance) {
       uiInstance = firebaseui.auth.AuthUI.getInstance();
@@ -47,6 +61,7 @@ const startFirebaseUI = (elementId) => {
         uiInstance = new firebaseui.auth.AuthUI(auth);
       }
     }
+    // tells Firebase UI reset and  mount itself inside the given HTML container (elementId) using our uiConfig settings.
     uiInstance.reset();
     uiInstance.start(elementId, uiConfig);
   } catch (error) {
@@ -76,6 +91,8 @@ const handleLogout = async () => {
   }
 };
 
+// Listens for changes in auth e.g. whether user is logged in or out
+// Used in auth context
 onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log("User is signed in:", user.email);

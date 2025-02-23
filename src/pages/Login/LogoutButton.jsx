@@ -1,6 +1,6 @@
 // LogoutButton.jsx
-import React from 'react';
-import { handleLogout } from './FirebaseAuth';
+import { handleLogout } from "./FirebaseAuth";
+import Button from "../../components/Button";
 
 const LogoutButton = () => {
   const onLogoutClick = async () => {
@@ -13,10 +13,10 @@ const LogoutButton = () => {
   };
 
   return (
-    <button
-      onClick={onLogoutClick}
-      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-    >
+    // <Button onClick={onLogoutClick} className="btn-primary">
+    //   Test
+    // </Button>
+    <button onClick={onLogoutClick} className="btn-primary">
       Logout
     </button>
   );
