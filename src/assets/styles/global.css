@@ -1,1 +1,110 @@
 @import "tailwindcss";
+
+/* 
+Primary: Used for headings, buttons, links
+Secondary: Used for backgrounds, subtle UI elements.
+*/
+
+/* @theme is used for defining global variables */
+@theme {
+  --color-primary: var(--color-purple-500);
+  --color-primary-dark: var(--color-purple-700);
+  --color-secondary: var(--color-purple-200);
+  --color-neutral-dark: var(--color-slate-800);
+  --color-neutral-light: var(--color-slate-50);
+
+  --font-size-h1: clamp(1.5rem, 3.5vw, 2.5rem);
+  --font-size-h2: clamp(1.25rem, 3vw, 2rem);
+  --font-size-h3: clamp(1.125rem, 2.5vw, 1.75rem);
+  --font-size-h4: clamp(1rem, 2vw, 1.5rem);
+  --font-size-h5: clamp(0.875rem, 1.8vw, 1.25rem);
+  --font-size-h6: clamp(0.75rem, 1.5vw, 1.125rem);
+  --font-size-body: clamp(0.75rem, 1.5vw, 1rem);
+
+  --animate-flip: flip 0.6s ease-in-out;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(180deg);
+  }
+}
+
+/* @layer base applies default styles */
+@layer base {
+  body {
+    min-height: 100vh;
+    background-color: var(--color-neutral-light);
+    font-family: "Poppins", serif;
+    font-size: var(--font-size-body);
+  }
+  h1 {
+    font-size: var(--font-size-h1);
+  }
+  h2 {
+    font-size: var(--font-size-h2);
+  }
+  h3 {
+    font-size: var(--font-size-h3);
+  }
+  h4 {
+    font-size: var(--font-size-h4);
+  }
+  h5 {
+    font-size: var(--font-size-h5);
+  }
+  h6 {
+    font-size: var(--font-size-h6);
+  }
+  p {
+    font-size: var(--font-size-body);
+  }
+}
+
+@layer utilities {
+  .text-h1 {
+    font-size: var(--font-size-h1);
+  }
+  .text-h2 {
+    font-size: var(--font-size-h2);
+  }
+  .text-h3 {
+    font-size: var(--font-size-h3);
+  }
+  .text-h4 {
+    font-size: var(--font-size-h4);
+  }
+  .text-h5 {
+    font-size: var(--font-size-h5);
+  }
+  .text-h6 {
+    font-size: var(--font-size-h6);
+  }
+  .text-body {
+    font-size: var(--font-size-body);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark mt-4 min-w-24 rounded-full px-5 py-2 font-semibold text-white shadow-md;
+  }
+
+  textarea,
+  .text-area {
+    @apply border-neutral-dark block w-full rounded-lg border bg-white p-4;
+  }
+  input,
+  .input {
+    @apply border-neutral-dark block w-full rounded-lg border bg-white p-2;
+  }
+  .flashcard {
+    @apply hover:animate-flip mx-auto my-4 flex min-h-[calc(100dvh-300px)] max-w-full items-center justify-center rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8;
+  }
+  .flashcard-preview {
+    @apply m-0 mb-2 min-h-60 hover:animate-none md:mb-0;
+  }
+}

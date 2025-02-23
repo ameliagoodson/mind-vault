@@ -1,56 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { doc, collection, getDocs, getDoc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
-const testUnauthorizedFirestoreRead = async () => {
-  try {
-    const flashcardsRef = collection(db, "users/5555AAAA/flashcards");
-    const snapshot = await getDocs(flashcardsRef);
 
-    if (snapshot.empty) {
-      console.log("📭 No documents found (but request succeeded, meaning it's not blocked).");
-    } else {
-      console.log("❌ ERROR: Unauthenticated user was able to access data!");
-    }
-  } catch (error) {
-    console.error("✅ Expected permission error:", error);
-  }
-};
-const HomePage = () => {
+const HomePage = ({ cardNum, setCardNum }) => {
   const { user } = useAuth(); // Get logged-in user
 
-  useEffect(() => {
-    testUnauthorizedFirestoreRead();
-    const testUnauthorizedAccess = async () => {
-      if (!user) {
-        console.log("⛔ User not authenticated. Exiting.");
-        return;
-      }
+  // useEffect(() => {
+  //   const testUnauthorizedFirestoreRead = async () => {
+  //     try {
+  //       const flashcardsRef = collection(db, "users/5555AAAA/flashcards");
+  //       const snapshot = await getDocs(flashcardsRef);
 
-      try {
-        const userRef = doc(db, "users", testUserId);
-        const userSnap = await getDoc(userRef);
+  //       if (snapshot.empty) {
+  //         console.log("📭 No documents found (but request succeeded).");
+  //       } else {
+  //         console.log(
+  //           "❌ ERROR: Unauthenticated user was able to access data!",
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("✅ Expected permission error:", error);
+  //     }
+  //   };
 
-        if (userSnap.exists()) {
-          console.log("❌ Unauthorized access SUCCESSFUL. Firestore returned:", userSnap.data());
-        } else {
-          console.log("✅ Unauthorized access BLOCKED. No data returned.");
-        }
-      } catch (error) {
-        console.error("🚨 Firestore access error (expected if security rules are correct):", error);
-      }
-    };
-
-    testUnauthorizedAccess();
-  }, [user]);
+  //   testUnauthorizedFirestoreRead();
+  // }, []);
 
   return (
-    <div>
-      <h1>I am the homepage</h1>
-      <p>
-        This will be a landing page with a nav with links to login and signup, and a hero section introducing
-        the product.
-      </p>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="container mx-auto max-w-4xl">
+        <h1 className="h1">MindVault: Your Brain’s Best Friend</h1>
+        <h2>
+          Intelligent flashcards, personalized AI review sessions, and smart
+          reminders—so what you learn stays with you.
+        </h2>
+      </div>
     </div>
   );
 };

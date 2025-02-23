@@ -13,9 +13,12 @@ const firebaseConfig = {
   measurementId: "G-NTW262CV7Y",
 };
 
-// ✅ Initialize Firebase app (only once)
+// ✅ Initializes/starts my Firebase app instance using my credentials
+// Returns an object
 const app = initializeApp(firebaseConfig);
+// Sets up my Firebase authentication instance, links auth
 const auth = getAuth(app);
-const db = getFirestore(app); // Initialise Firestore database
+// sets up my Firestore (database) instance, accesses my db
+const db = getFirestore(app);
 
 export { app, auth, db };

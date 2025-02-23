@@ -1,49 +1,32 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { auth, db } from "../firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth } from "../firebase"; // Firebase authentication instance
 import { onAuthStateChanged } from "firebase/auth";
 
-const AuthContext = createContext();
+// Create an Auth Context object. Context is global state
+const AuthContext = createContext(null);
 
+// AuthProvider creates components that wraps app all children in App.jsx
+// It broadcasts user data to all components inside it
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // Stores user info
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      setLoading(false);
-
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-          // ✅ Save new user to Firestore
-          await setDoc(userRef, {
-            name: user.displayName || "New User",
-            email: user.email,
-            createdAt: new Date(),
-          });
-          console.log("📌 New user added to Firestore:", user.email);
-        }
-      }
+    // Listen for login/logout changes
+    // onAuthStateChanged returns function that we store in unsubscribe
+    // Unsubscribe function = cleanup mechanism. It turns off onAuthStateChanged and stops listening for auth changes.
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Cleanup when component unmounts
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return <AuthContext.Provider value={{ user, isAuthenticated: !!user }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+  );
 };
 
+// Create a Custom Hook to Use the Context
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return useContext(AuthContext);
 };
