@@ -1,5 +1,5 @@
-import Flashcard from "./Flashcard";
-import FlashcardNavigation from "./FlashcardNavigation";
+import Flashcard from "../Flashcards/Flashcard";
+import FlashcardNavigation from "../Flashcards/FlashcardNavigation";
 
 const StudyUI = () => {
   return (

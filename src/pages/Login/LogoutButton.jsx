@@ -13,12 +13,10 @@ const LogoutButton = () => {
   };
 
   return (
-    // <Button onClick={onLogoutClick} className="btn-primary">
-    //   Test
-    // </Button>
-    <button onClick={onLogoutClick} className="btn-primary">
-      Logout
-    </button>
+    <Button
+      onClick={onLogoutClick}
+      cssClasses="btn-primary"
+      btntext="Logout"></Button>
   );
 };
 
