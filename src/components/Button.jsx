@@ -1,7 +1,9 @@
-const Button = () => {
+const Button = ({ btntext, onClick, cssClasses }) => {
   return (
     <div>
-      <button className="btn-primary">Text Here</button>
+      <button onClick={onClick} className={cssClasses}>
+        {btntext}
+      </button>
     </div>
   );
 };

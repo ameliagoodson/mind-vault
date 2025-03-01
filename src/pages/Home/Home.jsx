@@ -1,31 +1,16 @@
-import { useEffect, useState } from "react";
-import { db } from "../../firebase";
-import { doc, collection, getDocs, getDoc } from "firebase/firestore";
+import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
 
-const HomePage = ({ cardNum, setCardNum }) => {
+const HomePage = () => {
   const { user } = useAuth(); // Get logged-in user
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const testUnauthorizedFirestoreRead = async () => {
-  //     try {
-  //       const flashcardsRef = collection(db, "users/5555AAAA/flashcards");
-  //       const snapshot = await getDocs(flashcardsRef);
-
-  //       if (snapshot.empty) {
-  //         console.log("📭 No documents found (but request succeeded).");
-  //       } else {
-  //         console.log(
-  //           "❌ ERROR: Unauthenticated user was able to access data!",
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.error("✅ Expected permission error:", error);
-  //     }
-  //   };
-
-  //   testUnauthorizedFirestoreRead();
-  // }, []);
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
