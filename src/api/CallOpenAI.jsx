@@ -13,7 +13,6 @@ export const callOpenAI = async (query) => {
           "response": "<concise answer>",
           "categories": ["<First Category>", "<Second Category>"],
           "example": "<Relevant code example or 'None' if not applicable>",
-          "language": "<programming language of the example>"
         }
         Ensure all properties are always included. Never return any additional text outside the JSON object.`,
       },

@@ -21,16 +21,16 @@ const NavBar = () => {
               <Link to="/dashboard" className="mr-4">
                 Dashboard
               </Link>
-              <Link to="/study" className="mr-4">
+              {/* <Link to="/study" className="mr-4">
                 Study
-              </Link>
+              </Link> */}
               <Link to="/flashcards" className="mr-4">
                 Flashcards
               </Link>
               <Link to="/flashcards/create" className="mr-4">
                 Create Flashcard
               </Link>
-              <LogoutButton />
+              {/* <LogoutButton /> */}
             </div>
           ) : (
             <div>
