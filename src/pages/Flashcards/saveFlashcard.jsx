@@ -1,7 +1,9 @@
-
+import processCategories from "../../utils/processCategories";
+import placeholders from "../../data/placeholders";
+import { saveToDB } from "../../firestore";
 
 // SAVE function uses local variables to determine final values
-const saveFlashcard = (query, response, category, user) => {
+const saveFlashcard = (query, answer, category, user, editedQuestion, editedAnswer, editedCategories) => {
   // Calculate what should be saved
   const questionToSave =
     editedQuestion === "" || editedQuestion === placeholders.question

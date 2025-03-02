@@ -9,7 +9,8 @@ const CreateFlashcard = () => {
   const [response, setResponse] = useState("");
   const [category, setCategory] = useState("");
   const [example, setExample] = useState("");
-  const [resetFlashcardContent, setResetFlashcardContent] = useState();
+  const [language, setLanguage] = useState("")
+  const [resetFlashcardContent, setResetFlashcardContent] = useState()
 
 
   const handleAPIRequest = async () => {
@@ -18,6 +19,7 @@ const CreateFlashcard = () => {
       setResponse(apiResponse.response || "Error: No response"); // Prevent setting undefined
       setCategory(apiResponse.categories || "Unknown");
       setExample(apiResponse.example || "No example");
+      setLanguage(apiResponse.language || "javascript");
       setResetFlashcardContent(false);
     } catch (error) {
       console.log("Error " + error);
@@ -29,6 +31,7 @@ const CreateFlashcard = () => {
     setResponse("");
     setCategory("");
     setExample("");
+    setLanguage("");
     setResetFlashcardContent(true);
   };
 
@@ -67,6 +70,7 @@ const CreateFlashcard = () => {
               response={response}
               category={category}
               example={example}
+              language={language}
               type="preview"
               resetFlashcardContent={resetFlashcardContent}
               setResetFlashcardContent={setResetFlashcardContent}

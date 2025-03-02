@@ -1,10 +1,13 @@
 import classNames from "classnames";
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { useState, useEffect } from "react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { nightOwl } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import useFlashcards from "./useFlashcards";
 import saveFlashcard from "./saveFlashcard";
-
+import formatCode from "../../utils/formatCode"
+import placeholders from "../../data/placeholders";
 
 const Flashcard = ({
   query,
@@ -22,7 +25,6 @@ const Flashcard = ({
     editedCategories,
     isSaved,
     editMode,
-    placeholders,
     setEditedQuestion,
     setEditedAnswer,
     setEditedCategories,
@@ -32,7 +34,22 @@ const Flashcard = ({
 
   } = useFlashcards(query, response, category);
 
-  const { user } = useAuth(); // Get logged-in user
+  const { user } = useAuth();
+  const [formattedCode, setFormattedCode] = useState(example)
+
+
+  useEffect(() => {
+    const setAndFormatCode = async () => {
+      const formatted = await formatCode(example);
+      setFormattedCode(formatted);
+    };
+    if (example) {
+      setAndFormatCode();
+    }
+  }, [example]);
+
+
+  console.log("formattedCode: ", formattedCode);
 
   // RESET
   useEffect(() => {
@@ -85,7 +102,7 @@ const Flashcard = ({
               <h4 className="text-2xl">
                 {isSaved ? editedAnswer : response || placeholders.answer}
               </h4>
-              {example ? <SyntaxHighlighter language="language" wrapLongLines="true">{example}</SyntaxHighlighter> : ""}
+              {example ? <SyntaxHighlighter language="javascript" wrapLongLines={true} style={nightOwl}>{formattedCode}</SyntaxHighlighter> : ""}
               <h6>
                 {isSaved ? editedCategories : category || placeholders.category}
               </h6>
@@ -97,7 +114,7 @@ const Flashcard = ({
         <button onClick={() => editFlashcard(query, response, category, user)} className="btn-primary">
           Edit
         </button>
-        <button onClick={() => saveFlashcard(query, response, category, user)} className="btn-primary">
+        <button onClick={() => saveFlashcard(query, response, category, user, editedQuestion, editedAnswer, editedCategories,)} className="btn-primary">
           Save
         </button>
       </div>
