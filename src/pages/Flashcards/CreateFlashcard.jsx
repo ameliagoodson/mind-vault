@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Flashcard from "./Flashcard";
-import { callOpenAI } from "../../api/CallOpenAI";
+import { handleAPIRequest } from "../../utils/openAIUtils";
 
 const CreateFlashcard = () => {
   const { user } = useAuth(); // Get logged-in user
@@ -9,29 +9,14 @@ const CreateFlashcard = () => {
   const [response, setResponse] = useState("");
   const [category, setCategory] = useState("");
   const [example, setExample] = useState("");
-  const [language, setLanguage] = useState("")
   const [resetFlashcardContent, setResetFlashcardContent] = useState()
-
-
-  const handleAPIRequest = async () => {
-    try {
-      const apiResponse = await callOpenAI(query);
-      setResponse(apiResponse.response || "Error: No response"); // Prevent setting undefined
-      setCategory(apiResponse.categories || "Unknown");
-      setExample(apiResponse.example || "No example");
-      setLanguage(apiResponse.language || "javascript");
-      setResetFlashcardContent(false);
-    } catch (error) {
-      console.log("Error " + error);
-    }
-  };
 
   const handleReset = () => {
     setQuery("");
     setResponse("");
     setCategory("");
     setExample("");
-    setLanguage("");
+
     setResetFlashcardContent(true);
   };
 
@@ -58,7 +43,10 @@ const CreateFlashcard = () => {
               </button>
 
               {/* CALL API */}
-              <button onClick={handleAPIRequest} className="btn-primary">
+              <button onClick={() => {
+                handleAPIRequest(query, setResponse, setCategory, setExample, setResetFlashcardContent)
+              }
+              } className="btn-primary">
                 Submit
               </button>
 
@@ -70,7 +58,6 @@ const CreateFlashcard = () => {
               response={response}
               category={category}
               example={example}
-              language={language}
               type="preview"
               resetFlashcardContent={resetFlashcardContent}
               setResetFlashcardContent={setResetFlashcardContent}

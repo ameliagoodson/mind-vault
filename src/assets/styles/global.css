@@ -107,4 +107,13 @@ Secondary: Used for backgrounds, subtle UI elements.
   .flashcard-preview {
     @apply m-0 mb-2 min-h-60 md:mb-0;
   }
+  .chat-message {
+    @apply rounded-lg p-2 not-first:mt-2;
+  }
+  .chat-user {
+    @apply bg-neutral-light;
+  }
+  .chat-ai {
+    @apply bg-secondary;
+  }
 }
