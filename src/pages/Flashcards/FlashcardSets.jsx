@@ -38,6 +38,7 @@ const getAllFlashcards = () => {
             query={card.question}
             response={card.answer}
             category={card.category}
+            example={card.example}
           />
         </div>
       ))}

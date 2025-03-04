@@ -1,7 +1,7 @@
 import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
-export const saveToDB = async ({ user, question, answer, category }) => {
+export const saveToDB = async ({ user, question, answer, category, example }) => {
   if (!user) {
     console.error("User not authenticated");
     return;
@@ -17,6 +17,7 @@ export const saveToDB = async ({ user, question, answer, category }) => {
       question: question,
       answer: answer,
       category: category,
+      example: example
     });
     console.log("Test data saved!");
   } catch (error) {

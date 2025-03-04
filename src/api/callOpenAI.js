@@ -3,7 +3,7 @@ const apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
 export const callOpenAI = async (query) => {
   const apiBody = {
     model: "gpt-3.5-turbo",
-    response_format: { type: "json_object" }, // ✅ Forces JSON mode, but still returns a string
+    response_format: { type: "json_object" }, // Forces JSON mode, but still returns a string
     messages: [
       {
         role: "system",
@@ -12,13 +12,12 @@ export const callOpenAI = async (query) => {
         {
           "response": "<concise answer>",
           "categories": ["<First Category>", "<Second Category>"],
-          "example": "<Relevant code example or 'None' if not applicable>",
+          "example": "<Relevant code example>" or "" if not applicable,
         }
         Ensure all properties are always included. Never return any additional text outside the JSON object.`,
       },
       {
         role: "user",
-
         content: query,
       },
     ],
@@ -37,10 +36,10 @@ export const callOpenAI = async (query) => {
     let data = await response.json();
     console.log("API Response:", data);
 
-    // ✅ Extract the JSON string from the response
+    // Extract the JSON string from the response
     let jsonString = data.choices[0].message.content;
 
-    // ✅ Manually parse it into an object
+    // Manually parse it into an object
     let structuredData = JSON.parse(jsonString);
 
     return structuredData;

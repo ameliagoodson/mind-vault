@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import useFlashcards from "./useFlashcards";
 import saveFlashcard from "./saveFlashcard";
-import formatCode from "../../utils/formatCode"
 import placeholders from "../../data/placeholders";
 
 const Flashcard = ({
@@ -32,24 +31,10 @@ const Flashcard = ({
     setEditMode,
     editFlashcard,
 
-  } = useFlashcards(query, response, category);
+  } = useFlashcards(query, response, category, example);
 
   const { user } = useAuth();
-  const [formattedCode, setFormattedCode] = useState(example)
 
-
-  useEffect(() => {
-    const setAndFormatCode = async () => {
-      const formatted = await formatCode(example);
-      setFormattedCode(formatted);
-    };
-    if (example) {
-      setAndFormatCode();
-    }
-  }, [example]);
-
-
-  console.log("formattedCode: ", formattedCode);
 
   // RESET
   useEffect(() => {
@@ -57,6 +42,7 @@ const Flashcard = ({
       setEditedQuestion(placeholders.question);
       setEditedAnswer(placeholders.answer);
       setEditedCategories(placeholders.category);
+
       setIsSaved(false);
     }
   }, [resetFlashcardContent]);

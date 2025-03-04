@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Flashcard from "./Flashcard";
-import { handleAPIRequest } from "../../utils/openAIUtils";
+import { handleAPIRequest } from "../../api/openAIUtils";
 
 const CreateFlashcard = () => {
   const { user } = useAuth(); // Get logged-in user
