@@ -1,10 +1,12 @@
 import Button from "../../components/Button";
 import { useAuth } from "../../context/AuthContext";
 import { handleAPIRequest } from "../../api/openAIUtils";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { MdAccountCircle } from "react-icons/md";
+import {
+  dracula,
+  vscDarkPlus,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const ChatComponent = () => {
   const { user } = useAuth();
@@ -14,75 +16,39 @@ const ChatComponent = () => {
   const [category, setCategory] = useState("");
   const [example, setExample] = useState("");
   const [resetFlashcardContent, setResetFlashcardContent] = useState();
-  const responseIdRef = useRef(null); // Track the last response we've processed
 
-  // Load conversation from localStorage on initial render
+  useEffect(() => {
+    if (query.trim() !== "" && response.trim() !== "") {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "user",
+          content: query,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          type: "ai",
+          content: response,
+          example: example,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    }
+  }, [response]);
+
   useEffect(() => {
     const data = localStorage.getItem("CONVERSATION");
     if (data) {
-      try {
-        const parsed = JSON.parse(data);
-        setConversation(parsed);
-      } catch (e) {
-        console.error("Error parsing conversation from localStorage", e);
-      }
+      const parsed = JSON.parse(data);
+      setConversation(parsed);
     }
   }, []);
 
-  // Save conversation to localStorage when it changes
   useEffect(() => {
     if (conversation.length > 0) {
       localStorage.setItem("CONVERSATION", JSON.stringify(conversation));
     }
   }, [conversation]);
-
-  // This function handles the API request and manages conversation updates
-  const handleSubmit = () => {
-    if (query.trim() === "") return; // Don't process empty queries
-
-    const currentQuery = query.trim(); // Save the current query
-    setQuery(""); // Clear input field immediately for better UX
-
-    // Generate a unique ID for this response
-    const requestId = Date.now().toString();
-    responseIdRef.current = requestId;
-
-    // Add user message to conversation immediately
-    setConversation((prev) => [
-      ...prev,
-      {
-        type: "user",
-        content: currentQuery,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-
-    // Call API
-    handleAPIRequest(
-      currentQuery,
-      conversation,
-      (responseText) => {
-        // Only update if this is still the latest request
-        if (responseIdRef.current === requestId) {
-          setResponse(responseText);
-
-          // Add AI response to conversation
-          setConversation((prev) => [
-            ...prev,
-            {
-              type: "ai",
-              content: responseText,
-              example: example,
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-        }
-      },
-      setCategory,
-      setExample,
-      setResetFlashcardContent,
-    );
-  };
 
   return (
     <div className="chat-interface mb-4 flex flex-1 flex-col overflow-auto rounded-md bg-white p-4">
@@ -95,16 +61,12 @@ const ChatComponent = () => {
           conversation.map((element, index) =>
             element.type == "user" ? (
               <div key={index} className="chat-message chat-user block">
-                <span>
-                  <MdAccountCircle className="mr-1 inline h-6 w-6" />
-                  {element.content}
-                </span>
+                {element.content}
               </div>
             ) : (
               <div key={index}>
                 <div className="chat-message chat-ai block">
                   {element.content}
-                  <img src="" alt="" />
                 </div>
                 {element.example && (
                   <div className="mt-2 mb-4">
@@ -129,7 +91,20 @@ const ChatComponent = () => {
           value={query}
           className="w-full border-t border-gray-300"></textarea>
         <Button
-          onClick={handleSubmit}
+          onClick={() => {
+            console.log("Before API call - query:", query);
+            console.log("Before API call - conversation:", conversation);
+
+            handleAPIRequest(
+              query,
+              conversation,
+              setResponse,
+              setCategory,
+              setExample,
+              setResetFlashcardContent,
+            );
+            setQuery(""); // the added clear on submit that messed up everything
+          }}
           btntext="Submit"
           cssClasses="btn-primary"
         />
@@ -137,7 +112,6 @@ const ChatComponent = () => {
           onClick={() => {
             setConversation([]);
             setQuery("");
-            localStorage.removeItem("CONVERSATION");
           }}
           btntext={"Clear"}
           cssClasses={"btn-primary"}></Button>
