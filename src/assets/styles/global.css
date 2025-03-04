@@ -94,8 +94,20 @@ Secondary: Used for backgrounds, subtle UI elements.
 }
 
 @layer components {
+  .btn {
+    @apply mt-4 min-w-24 rounded-2xl px-4 py-1.5 font-semibold shadow-md;
+  }
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark mt-4 min-w-24 rounded-full px-5 py-2 font-semibold text-white shadow-md;
+    @apply bg-primary hover:bg-primary-dark mt-4 min-w-24 font-semibold text-white shadow-md;
+  }
+  .btn-secondary {
+    @apply bg-secondary hover:bg-primary mt-4 min-w-24 font-semibold text-black shadow-md;
+  }
+  .btn-small {
+    @apply text-xs;
+  }
+  .btn-no-colour {
+    @apply bg-none text-black;
   }
 
   textarea,
@@ -113,12 +125,12 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply m-0 mb-2 min-h-60 md:mb-0;
   }
   .chat-message {
-    @apply rounded-lg p-2 not-first:mt-2;
+    @apply rounded-lg p-2;
   }
   .chat-user {
-    @apply bg-neutral-light;
+    @apply bg-neutral-light mb-4 not-first:mt-4;
   }
   .chat-ai {
-    @apply bg-secondary;
+    @apply bg-secondary mt-4 mb-2;
   }
 }

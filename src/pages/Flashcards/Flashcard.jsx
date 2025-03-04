@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { nightOwl } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import useFlashcards from "./useFlashcards";
@@ -16,7 +16,6 @@ const Flashcard = ({
   type,
   resetFlashcardContent,
 }) => {
-
   // Defining variables by destructuring
   const {
     editedQuestion,
@@ -30,11 +29,9 @@ const Flashcard = ({
     setIsSaved,
     setEditMode,
     editFlashcard,
-
   } = useFlashcards(query, response, category, example);
 
   const { user } = useAuth();
-
 
   // RESET
   useEffect(() => {
@@ -88,7 +85,16 @@ const Flashcard = ({
               <h4 className="text-2xl">
                 {isSaved ? editedAnswer : response || placeholders.answer}
               </h4>
-              {example ? <SyntaxHighlighter language="javascript" wrapLongLines={true} style={nightOwl}>{formattedCode}</SyntaxHighlighter> : ""}
+              {example ? (
+                <SyntaxHighlighter
+                  language="javascript"
+                  wrapLongLines={true}
+                  style={nightOwl}>
+                  {formattedCode}
+                </SyntaxHighlighter>
+              ) : (
+                ""
+              )}
               <h6>
                 {isSaved ? editedCategories : category || placeholders.category}
               </h6>
@@ -97,10 +103,24 @@ const Flashcard = ({
         </div>
       </div>
       <div className="flex justify-around">
-        <button onClick={() => editFlashcard(query, response, category, user)} className="btn-primary">
+        <button
+          onClick={() => editFlashcard(query, response, category, user)}
+          className="btn btn-primary">
           Edit
         </button>
-        <button onClick={() => saveFlashcard(query, response, category, user, editedQuestion, editedAnswer, editedCategories,)} className="btn-primary">
+        <button
+          onClick={() =>
+            saveFlashcard(
+              query,
+              response,
+              category,
+              user,
+              editedQuestion,
+              editedAnswer,
+              editedCategories,
+            )
+          }
+          className="btn btn-primary">
           Save
         </button>
       </div>

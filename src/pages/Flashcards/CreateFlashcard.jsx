@@ -9,7 +9,7 @@ const CreateFlashcard = () => {
   const [response, setResponse] = useState("");
   const [category, setCategory] = useState("");
   const [example, setExample] = useState("");
-  const [resetFlashcardContent, setResetFlashcardContent] = useState()
+  const [resetFlashcardContent, setResetFlashcardContent] = useState();
 
   const handleReset = () => {
     setQuery("");
@@ -29,7 +29,6 @@ const CreateFlashcard = () => {
       <div className="interface-wrapper">
         <div className="interface mt-18 gap-8 md:flex">
           <div className="flex-col justify-center md:w-1/2">
-
             {/* CHAT INTERFACE */}
             <textarea
               className="text-area min-h-60"
@@ -38,18 +37,24 @@ const CreateFlashcard = () => {
               placeholder="What do you want to ask ChatGPT to turn into a flashcard?"></textarea>
 
             <div className="flex justify-around">
-              <button onClick={() => handleReset()} className="btn-primary">
+              <button onClick={() => handleReset()} className="btn btn-primary">
                 Clear
               </button>
 
               {/* CALL API */}
-              <button onClick={() => {
-                handleAPIRequest(query, setResponse, setCategory, setExample, setResetFlashcardContent)
-              }
-              } className="btn-primary">
+              <button
+                onClick={() => {
+                  handleAPIRequest(
+                    query,
+                    setResponse,
+                    setCategory,
+                    setExample,
+                    setResetFlashcardContent,
+                  );
+                }}
+                className="btn btn-primary">
                 Submit
               </button>
-
             </div>
           </div>
           <div className="md:w-1/2">

@@ -4,7 +4,7 @@ import { handleAPIRequest } from "../../api/openAIUtils";
 import { useState, useEffect, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdContentCopy } from "react-icons/md";
 
 const ChatComponent = () => {
   const { user } = useAuth();
@@ -85,8 +85,8 @@ const ChatComponent = () => {
   };
 
   return (
-    <div className="chat-interface mb-4 flex flex-1 flex-col overflow-auto rounded-md bg-white p-4">
-      <div className="chat-conversation flex-1 overflow-auto">
+    <div className="chat-interface flex flex-1 flex-col overflow-auto rounded-md bg-white">
+      <div className="chat-conversation flex-1 overflow-auto p-4">
         {conversation.length === 0 ? (
           <div className="py-4 text-center text-gray-400 italic">
             Your conversation will appear here
@@ -104,10 +104,9 @@ const ChatComponent = () => {
               <div key={index}>
                 <div className="chat-message chat-ai block">
                   {element.content}
-                  <img src="" alt="" />
                 </div>
                 {element.example && (
-                  <div className="mt-2 mb-4">
+                  <div className="relative mt-2">
                     <SyntaxHighlighter
                       language="javascript"
                       style={vscDarkPlus}
@@ -117,30 +116,45 @@ const ChatComponent = () => {
                     </SyntaxHighlighter>
                   </div>
                 )}
+                <div className="btn-container mb-4 flex justify-end">
+                  <button className="btn btn-small btn-no-colour mt-0 mr-4">
+                    Convert to Flashcard
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        element.content + "\n" + element.example,
+                      );
+                    }}>
+                    <MdContentCopy className="h-5 w-5 text-black" />
+                  </button>
+                </div>
               </div>
             ),
           )
         )}
       </div>
-      <div className="chat-input">
+      <div className="chat-input mt-2 p-4">
         <textarea
           placeholder="Ask GPT a question"
           onChange={(event) => setQuery(event.target.value)}
           value={query}
           className="w-full border-t border-gray-300"></textarea>
-        <Button
-          onClick={handleSubmit}
-          btntext="Submit"
-          cssClasses="btn-primary"
-        />
-        <Button
-          onClick={() => {
-            setConversation([]);
-            setQuery("");
-            localStorage.removeItem("CONVERSATION");
-          }}
-          btntext={"Clear"}
-          cssClasses={"btn-primary"}></Button>
+        <div className="btn-container flex">
+          <Button
+            onClick={handleSubmit}
+            btntext={"Submit"}
+            cssClasses={"btn btn-primary mr-2"}
+          />
+          <Button
+            onClick={() => {
+              setConversation([]);
+              setQuery("");
+              localStorage.removeItem("CONVERSATION");
+            }}
+            btntext={"Clear"}
+            cssClasses={"btn btn-secondary"}></Button>
+        </div>
       </div>
     </div>
   );

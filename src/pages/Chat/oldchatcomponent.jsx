@@ -106,7 +106,7 @@ const ChatComponent = () => {
             setQuery(""); // the added clear on submit that messed up everything
           }}
           btntext="Submit"
-          cssClasses="btn-primary"
+          cssClasses="btn btn-primary"
         />
         <Button
           onClick={() => {
@@ -114,7 +114,7 @@ const ChatComponent = () => {
             setQuery("");
           }}
           btntext={"Clear"}
-          cssClasses={"btn-primary"}></Button>
+          cssClasses={"btn btn-primary"}></Button>
       </div>
     </div>
   );

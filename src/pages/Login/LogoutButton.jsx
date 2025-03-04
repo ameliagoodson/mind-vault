@@ -15,7 +15,7 @@ const LogoutButton = () => {
   return (
     <Button
       onClick={onLogoutClick}
-      cssClasses="btn-primary"
+      cssClasses="btn btn-primary"
       btntext="Logout"></Button>
   );
 };
