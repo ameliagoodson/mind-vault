@@ -119,11 +119,14 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply border-neutral-dark block w-full rounded-lg border bg-white p-2;
   }
   .flashcard {
-    @apply mx-auto my-4 flex min-h-[calc(100dvh-300px)] max-w-full flex-col items-start justify-center rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8;
+    @apply mx-auto my-4 flex min-h-[calc(100dvh-300px)] w-3/4 max-w-full flex-col items-start justify-center rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8;
   }
   .flashcard-preview {
     @apply m-0 mb-2 min-h-60 md:mb-0;
   }
+  /* .flashcard-modal {
+    @apply fixed top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
+  } */
   .chat-message {
     @apply rounded-lg p-2;
   }

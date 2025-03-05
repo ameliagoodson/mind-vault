@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -32,6 +31,7 @@ const Flashcard = ({
   } = useFlashcards(query, response, category, example);
 
   const { user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
   // RESET
   useEffect(() => {
@@ -49,6 +49,7 @@ const Flashcard = ({
       <div
         className={classNames("flashcard", {
           "flashcard-preview": type === "preview",
+          "flashcard-modal": type === "modal",
         })}>
         <div className="flashcard-body w-full">
           {editMode == true ? (
@@ -90,7 +91,7 @@ const Flashcard = ({
                   language="javascript"
                   wrapLongLines={true}
                   style={nightOwl}>
-                  {formattedCode}
+                  {example}
                 </SyntaxHighlighter>
               ) : (
                 ""
@@ -98,31 +99,31 @@ const Flashcard = ({
               <h6>
                 {isSaved ? editedCategories : category || placeholders.category}
               </h6>
+              <div className="flex justify-around">
+                <button
+                  onClick={() => editFlashcard(query, response, category, user)}
+                  className="btn btn-primary">
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    saveFlashcard(
+                      query,
+                      response,
+                      category,
+                      user,
+                      editedQuestion,
+                      editedAnswer,
+                      editedCategories,
+                    )
+                  }
+                  className="btn btn-primary">
+                  Save
+                </button>
+              </div>
             </div>
           )}
         </div>
-      </div>
-      <div className="flex justify-around">
-        <button
-          onClick={() => editFlashcard(query, response, category, user)}
-          className="btn btn-primary">
-          Edit
-        </button>
-        <button
-          onClick={() =>
-            saveFlashcard(
-              query,
-              response,
-              category,
-              user,
-              editedQuestion,
-              editedAnswer,
-              editedCategories,
-            )
-          }
-          className="btn btn-primary">
-          Save
-        </button>
       </div>
     </div>
   );

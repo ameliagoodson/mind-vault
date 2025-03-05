@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { MdAccountCircle, MdContentCopy } from "react-icons/md";
+import FlashcardModal from "../Flashcards/FlashcardModal";
 
 const ChatComponent = () => {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ const ChatComponent = () => {
   const [example, setExample] = useState("");
   const [resetFlashcardContent, setResetFlashcardContent] = useState();
   const responseIdRef = useRef(null); // Track the last response we've processed
+  const [isOpen, setIsOpen] = useState(false);
 
   // Load conversation from localStorage on initial render
   useEffect(() => {
@@ -41,9 +43,8 @@ const ChatComponent = () => {
     if (query.trim() === "") return; // Don't process empty queries
 
     const currentQuery = query.trim(); // Save the current query
-    setQuery(""); // Clear input field immediately for better UX
+    setQuery("");
 
-    // Generate a unique ID for this response
     const requestId = Date.now().toString();
     responseIdRef.current = requestId;
 
@@ -73,6 +74,7 @@ const ChatComponent = () => {
               type: "ai",
               content: responseText,
               example: example,
+
               timestamp: new Date().toISOString(),
             },
           ]);
@@ -82,6 +84,17 @@ const ChatComponent = () => {
       setExample,
       setResetFlashcardContent,
     );
+  };
+
+  // Helper function to find the corresponding question for an AI response
+  const findQuestionForResponse = (aiIndex) => {
+    // Look for the most recent user message before this AI response
+    for (let i = aiIndex - 1; i >= 0; i--) {
+      if (conversation[i].type === "user") {
+        return conversation[i].content;
+      }
+    }
+    return ""; // Fallback if no question found
   };
 
   return (
@@ -116,8 +129,22 @@ const ChatComponent = () => {
                     </SyntaxHighlighter>
                   </div>
                 )}
+
                 <div className="btn-container mb-4 flex justify-end">
-                  <button className="btn btn-small btn-no-colour mt-0 mr-4">
+                  {isOpen && (
+                    <FlashcardModal
+                      code={element.example}
+                      answer={element.content}
+                      question={
+                        element.question || findQuestionForResponse(index)
+                      }
+                      setIsOpen={setIsOpen}
+                      isOpen={isOpen}
+                    />
+                  )}
+                  <button
+                    onClick={() => setIsOpen(true)}
+                    className="rounded-lg bg-purple-600 px-4 py-2 text-white">
                     Convert to Flashcard
                   </button>
                   <button
