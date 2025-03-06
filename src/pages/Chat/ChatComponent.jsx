@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { handleAPIRequest } from "../../api/openAIUtils";
 import { useState, useEffect, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { MdAccountCircle, MdContentCopy } from "react-icons/md";
 import FlashcardModal from "../Flashcards/FlashcardModal";
 
@@ -13,10 +13,11 @@ const ChatComponent = () => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [category, setCategory] = useState("");
-  const [example, setExample] = useState("");
+  const [code, setCode] = useState("");
   const [resetFlashcardContent, setResetFlashcardContent] = useState();
   const responseIdRef = useRef(null); // Track the last response we've processed
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
 
   // Load conversation from localStorage on initial render
   useEffect(() => {
@@ -43,7 +44,7 @@ const ChatComponent = () => {
     if (query.trim() === "") return; // Don't process empty queries
 
     const currentQuery = query.trim(); // Save the current query
-    setQuery("");
+    setQuery(""); // Clear the query on submit so the user sees it
 
     const requestId = Date.now().toString();
     responseIdRef.current = requestId;
@@ -73,20 +74,20 @@ const ChatComponent = () => {
             {
               type: "ai",
               content: responseText,
-              example: example,
-
+              code: code,
               timestamp: new Date().toISOString(),
             },
           ]);
         }
       },
       setCategory,
-      setExample,
+      setCode,
       setResetFlashcardContent,
     );
   };
 
-  // Helper function to find the corresponding question for an AI response
+  // This function takes the index of an AI message and looks backward through the conversation
+  // to find the most recent user message (which is assumed to be the question that prompted this AI response).
   const findQuestionForResponse = (aiIndex) => {
     // Look for the most recent user message before this AI response
     for (let i = aiIndex - 1; i >= 0; i--) {
@@ -95,6 +96,20 @@ const ChatComponent = () => {
       }
     }
     return ""; // Fallback if no question found
+  };
+
+  // Function to open modal with specific flashcard data
+  const openFlashcardModal = (index) => {
+    const aiMessage = conversation[index];
+    const question = findQuestionForResponse(index);
+
+    setSelectedFlashcard({
+      code: aiMessage.example,
+      answer: aiMessage.content,
+      question: question,
+    });
+
+    setIsOpen(true);
   };
 
   return (
@@ -122,7 +137,7 @@ const ChatComponent = () => {
                   <div className="relative mt-2">
                     <SyntaxHighlighter
                       language="javascript"
-                      style={vscDarkPlus}
+                      style={nightOwl}
                       showLineNumbers
                       wrapLongLines>
                       {element.example}
@@ -131,20 +146,9 @@ const ChatComponent = () => {
                 )}
 
                 <div className="btn-container mb-4 flex justify-end">
-                  {isOpen && (
-                    <FlashcardModal
-                      code={element.example}
-                      answer={element.content}
-                      question={
-                        element.question || findQuestionForResponse(index)
-                      }
-                      setIsOpen={setIsOpen}
-                      isOpen={isOpen}
-                    />
-                  )}
                   <button
-                    onClick={() => setIsOpen(true)}
-                    className="rounded-lg bg-purple-600 px-4 py-2 text-white">
+                    onClick={() => openFlashcardModal(index)}
+                    className="btn btn-small btn-no-colour mt-0 mr-4">
                     Convert to Flashcard
                   </button>
                   <button
@@ -153,7 +157,7 @@ const ChatComponent = () => {
                         element.content + "\n" + element.example,
                       );
                     }}>
-                    <MdContentCopy className="h-5 w-5 text-black" />
+                    <MdContentCopy className="icon" />
                   </button>
                 </div>
               </div>
@@ -161,6 +165,18 @@ const ChatComponent = () => {
           )
         )}
       </div>
+
+      {/* Render a single modal instance */}
+      {isOpen && selectedFlashcard && (
+        <FlashcardModal
+          code={selectedFlashcard.code}
+          answer={selectedFlashcard.answer}
+          question={selectedFlashcard.question}
+          setIsOpen={setIsOpen}
+          isOpen={isOpen}
+        />
+      )}
+
       <div className="chat-input mt-2 p-4">
         <textarea
           placeholder="Ask GPT a question"
