@@ -5,14 +5,15 @@ export const handleAPIRequest = async (
   conversation,
   setResponse,
   setCategory,
-  setExample,
+  setCode,
   setResetFlashcardContent,
 ) => {
   try {
     const apiResponse = await callOpenAI(query, conversation);
+
     setResponse(apiResponse.response || "Error: No response"); // Prevent setting undefined
     setCategory(apiResponse.categories || "Unknown");
-    setExample(apiResponse.example || "");
+    setCode(apiResponse.example || "");
     setResetFlashcardContent(false);
   } catch (error) {
     console.log("Error " + error);

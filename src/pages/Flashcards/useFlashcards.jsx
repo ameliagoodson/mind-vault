@@ -1,6 +1,5 @@
 import { saveToDB } from "../../firestore";
 import { useState } from "react";
-import processCategories from "../../utils/processCategories";
 
 const useFlashcards = () => {
   // Create state variables

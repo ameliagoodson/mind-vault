@@ -53,7 +53,7 @@ const Flashcard = ({
         "flashcard-preview": type === "preview",
         "flashcard-modal": type === "modal",
       })}>
-      <div className="flashcard-body w-full">
+      <div className="flashcard-body w-full overflow-scroll">
         {editMode == true ? (
           // EDIT
           <div className="edit-mode">
@@ -89,52 +89,50 @@ const Flashcard = ({
         ) : (
           // VIEW
           <div className="view-mode">
-            <div>
-              <h2 className="text-1xl mb-6">
-                {isSaved ? editedQuestion : query || placeholders.question}
-              </h2>
-              <p className="mb-4">
-                {isSaved ? editedAnswer : response || placeholders.answer}
-              </p>
-              {code ? (
-                <SyntaxHighlighter
-                  language="javascript"
-                  wrapLongLines={true}
-                  style={nightOwl}>
-                  {code}
-                </SyntaxHighlighter>
-              ) : (
-                ""
-              )}
-              <span>
-                {isSaved ? editedCategories : category || placeholders.category}
-              </span>
-              <div className="btn-container mt-4 flex">
-                <button
-                  onClick={() =>
-                    editFlashcard(query, response, category, code, user)
-                  }
-                  className="btn btn-primary mr-4">
-                  Edit
-                </button>
-                <button
-                  onClick={() =>
-                    saveFlashcard(
-                      query,
-                      response,
-                      category,
-                      code,
-                      user,
-                      editedQuestion,
-                      editedAnswer,
-                      editedCategories,
-                      editedCode,
-                    )
-                  }
-                  className="btn btn-primary">
-                  Save
-                </button>
-              </div>
+            <p className="mb-6">
+              {isSaved ? editedQuestion : query || placeholders.question}
+            </p>
+            <p className="mb-4">
+              {isSaved ? editedAnswer : response || placeholders.answer}
+            </p>
+            {code ? (
+              <SyntaxHighlighter
+                language="javascript"
+                wrapLongLines={true}
+                style={nightOwl}>
+                {code}
+              </SyntaxHighlighter>
+            ) : (
+              ""
+            )}
+            <span>
+              {isSaved ? editedCategories : category || placeholders.category}
+            </span>
+            <div className="btn-container mt-4 flex">
+              <button
+                onClick={() =>
+                  editFlashcard(query, response, category, code, user)
+                }
+                className="btn btn-primary mr-4">
+                Edit
+              </button>
+              <button
+                onClick={() =>
+                  saveFlashcard(
+                    query,
+                    response,
+                    category,
+                    code,
+                    user,
+                    editedQuestion,
+                    editedAnswer,
+                    editedCategories,
+                    editedCode,
+                  )
+                }
+                className="btn btn-primary">
+                Save
+              </button>
             </div>
           </div>
         )}

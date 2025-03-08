@@ -8,7 +8,7 @@ const CreateFlashcard = () => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [category, setCategory] = useState("");
-  const [example, setExample] = useState("");
+  const [code, setCode] = useState("");
   const [resetFlashcardContent, setResetFlashcardContent] = useState();
 
   const handleReset = () => {
@@ -48,7 +48,7 @@ const CreateFlashcard = () => {
                     query,
                     setResponse,
                     setCategory,
-                    setExample,
+                    setCode,
                     setResetFlashcardContent,
                   );
                 }}
@@ -62,7 +62,7 @@ const CreateFlashcard = () => {
               query={query}
               response={response}
               category={category}
-              example={example}
+              code={code}
               type="preview"
               resetFlashcardContent={resetFlashcardContent}
               setResetFlashcardContent={setResetFlashcardContent}

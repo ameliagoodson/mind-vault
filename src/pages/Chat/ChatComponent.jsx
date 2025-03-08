@@ -1,115 +1,43 @@
+import { useChat } from "../../hooks/useChat";
 import Button from "../../components/Button";
-import { useAuth } from "../../context/AuthContext";
-import { handleAPIRequest } from "../../api/openAIUtils";
-import { useState, useEffect, useRef } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { MdAccountCircle, MdContentCopy } from "react-icons/md";
 import FlashcardModal from "../Flashcards/FlashcardModal";
+import useToggle from "../../hooks/useToggle";
 
 const ChatComponent = () => {
-  const { user } = useAuth();
-  const [conversation, setConversation] = useState([]);
-  const [query, setQuery] = useState("");
-  const [response, setResponse] = useState("");
-  const [category, setCategory] = useState("");
-  const [code, setCode] = useState("");
-  const [resetFlashcardContent, setResetFlashcardContent] = useState();
-  const responseIdRef = useRef(null); // Track the last response we've processed
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const {
+    conversation,
+    query,
+    setQuery,
+    handleSubmit,
+    selectedFlashcard,
+    setSelectedFlashcard,
+  } = useChat();
 
-  // Load conversation from localStorage on initial render
-  useEffect(() => {
-    const data = localStorage.getItem("CONVERSATION");
-    if (data) {
-      try {
-        const parsed = JSON.parse(data);
-        setConversation(parsed);
-      } catch (e) {
-        console.error("Error parsing conversation from localStorage", e);
-      }
-    }
-  }, []);
+  const [isModalOpen, toggleModal] = useToggle(false);
 
-  // Save conversation to localStorage when it changes
-  useEffect(() => {
-    if (conversation.length > 0) {
-      localStorage.setItem("CONVERSATION", JSON.stringify(conversation));
-    }
-  }, [conversation]);
-
-  // This function handles the API request and manages conversation updates
-  const handleSubmit = () => {
-    if (query.trim() === "") return; // Don't process empty queries
-
-    const currentQuery = query.trim(); // Save the current query
-    setQuery(""); // Clear the query on submit so the user sees it
-
-    const requestId = Date.now().toString();
-    responseIdRef.current = requestId;
-
-    // Add user message to conversation immediately
-    setConversation((prev) => [
-      ...prev,
-      {
-        type: "user",
-        content: currentQuery,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-
-    // Call API
-    handleAPIRequest(
-      currentQuery,
-      conversation,
-      (responseText) => {
-        // Only update if this is still the latest request
-        if (responseIdRef.current === requestId) {
-          setResponse(responseText);
-
-          // Add AI response to conversation
-          setConversation((prev) => [
-            ...prev,
-            {
-              type: "ai",
-              content: responseText,
-              code: code,
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-        }
-      },
-      setCategory,
-      setCode,
-      setResetFlashcardContent,
-    );
-  };
-
-  // This function takes the index of an AI message and looks backward through the conversation
-  // to find the most recent user message (which is assumed to be the question that prompted this AI response).
-  const findQuestionForResponse = (aiIndex) => {
-    // Look for the most recent user message before this AI response
-    for (let i = aiIndex - 1; i >= 0; i--) {
-      if (conversation[i].type === "user") {
-        return conversation[i].content;
-      }
-    }
-    return ""; // Fallback if no question found
-  };
-
-  // Function to open modal with specific flashcard data
   const openFlashcardModal = (index) => {
     const aiMessage = conversation[index];
-    const question = findQuestionForResponse(index);
+
+    if (!aiMessage) {
+      console.error("❌ Error: AI message not found at index", index);
+      return;
+    }
+
+    const question =
+      conversation
+        .slice(0, index) // Look at earlier messages
+        .reverse()
+        .find((msg) => msg.type === "user")?.content || "";
 
     setSelectedFlashcard({
-      code: aiMessage.example,
-      answer: aiMessage.content,
+      code: aiMessage.code || "",
+      answer: aiMessage.content || "",
+      category: aiMessage.category || "",
       question: question,
     });
 
-    setIsOpen(true);
+    toggleModal();
   };
 
   return (
@@ -121,30 +49,25 @@ const ChatComponent = () => {
           </div>
         ) : (
           conversation.map((element, index) =>
-            element.type == "user" ? (
+            element.type === "user" ? (
               <div key={index} className="chat-message chat-user block">
-                <span>
+                <p className="leading-7">
                   <MdAccountCircle className="mr-1 inline h-6 w-6" />
                   {element.content}
-                </span>
+                </p>
               </div>
             ) : (
               <div key={index}>
                 <div className="chat-message chat-ai block">
-                  {element.content}
+                  <p className="leading-7">{element.content}</p>
                 </div>
-                {element.example && (
+                {element.code && (
                   <div className="relative mt-2">
-                    <SyntaxHighlighter
-                      language="javascript"
-                      style={nightOwl}
-                      showLineNumbers
-                      wrapLongLines>
-                      {element.example}
-                    </SyntaxHighlighter>
+                    <pre className="rounded-md bg-gray-800 p-4 text-white">
+                      {element.code}
+                    </pre>
                   </div>
                 )}
-
                 <div className="btn-container mb-4 flex justify-end">
                   <button
                     onClick={() => openFlashcardModal(index)}
@@ -152,11 +75,11 @@ const ChatComponent = () => {
                     Convert to Flashcard
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={() =>
                       navigator.clipboard.writeText(
-                        element.content + "\n" + element.example,
-                      );
-                    }}>
+                        element.content + "\n" + element.code,
+                      )
+                    }>
                     <MdContentCopy className="icon" />
                   </button>
                 </div>
@@ -165,17 +88,6 @@ const ChatComponent = () => {
           )
         )}
       </div>
-
-      {/* Render a single modal instance */}
-      {isOpen && selectedFlashcard && (
-        <FlashcardModal
-          code={selectedFlashcard.code}
-          answer={selectedFlashcard.answer}
-          question={selectedFlashcard.question}
-          setIsOpen={setIsOpen}
-          isOpen={isOpen}
-        />
-      )}
 
       <div className="chat-input mt-2 p-4">
         <textarea
@@ -190,15 +102,22 @@ const ChatComponent = () => {
             cssClasses={"btn btn-primary mr-2"}
           />
           <Button
-            onClick={() => {
-              setConversation([]);
-              setQuery("");
-              localStorage.removeItem("CONVERSATION");
-            }}
+            onClick={() => localStorage.removeItem("CONVERSATION")}
             btntext={"Clear"}
-            cssClasses={"btn btn-secondary"}></Button>
+            cssClasses={"btn btn-secondary"}
+          />
         </div>
       </div>
+      {isModalOpen && selectedFlashcard && (
+        <FlashcardModal
+          code={selectedFlashcard.code}
+          answer={selectedFlashcard.answer}
+          category={selectedFlashcard.category}
+          question={selectedFlashcard.question}
+          toggleModal={toggleModal}
+          isModalOpen={isModalOpen}
+        />
+      )}
     </div>
   );
 };
