@@ -19,8 +19,8 @@ const FlashcardModal = ({
         className="modal-container relative z-10 max-w-2xl rounded-lg bg-white shadow-lg"
         onClick={(e) => e.stopPropagation()}>
         <Flashcard
-          query={question}
-          response={answer}
+          question={question}
+          answer={answer}
           category={category}
           code={code}
           type="modal"

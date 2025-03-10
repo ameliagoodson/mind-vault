@@ -6,14 +6,17 @@ import { useAuth } from "../../context/AuthContext";
 import useFlashcards from "./useFlashcards";
 import saveFlashcard from "./saveFlashcard";
 import placeholders from "../../data/placeholders";
+import Button from "../../components/Button";
 
 const Flashcard = ({
-  query,
-  response,
+  id,
+  question,
+  answer,
   category,
   code,
   type,
   resetFlashcardContent,
+  deleteFlashcard,
 }) => {
   // Defining variables by destructuring
   const {
@@ -30,7 +33,7 @@ const Flashcard = ({
     setIsSaved,
     setEditMode,
     editFlashcard,
-  } = useFlashcards(query, response, category, code);
+  } = useFlashcards(question, answer, category, code);
 
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
@@ -90,10 +93,10 @@ const Flashcard = ({
           // VIEW
           <div className="view-mode">
             <p className="mb-6">
-              {isSaved ? editedQuestion : query || placeholders.question}
+              {isSaved ? editedQuestion : question || placeholders.question}
             </p>
             <p className="mb-4">
-              {isSaved ? editedAnswer : response || placeholders.answer}
+              {isSaved ? editedAnswer : answer || placeholders.answer}
             </p>
             {code ? (
               <SyntaxHighlighter
@@ -111,16 +114,16 @@ const Flashcard = ({
             <div className="btn-container mt-4 flex">
               <button
                 onClick={() =>
-                  editFlashcard(query, response, category, code, user)
+                  editFlashcard(question, answer, category, code, user)
                 }
                 className="btn btn-primary mr-4">
                 Edit
               </button>
               <button
                 onClick={() =>
-                  saveFlashcard(
-                    query,
-                    response,
+                  saveFlashcard({
+                    question,
+                    answer,
                     category,
                     code,
                     user,
@@ -128,11 +131,15 @@ const Flashcard = ({
                     editedAnswer,
                     editedCategories,
                     editedCode,
-                  )
+                  })
                 }
-                className="btn btn-primary">
+                className="btn btn-primary mr-4">
                 Save
               </button>
+              <Button
+                btntext={"Delete"}
+                onClick={() => deleteFlashcard(id, user)}
+                cssClasses={"btn btn-primary"}></Button>
             </div>
           </div>
         )}

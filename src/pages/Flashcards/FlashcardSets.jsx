@@ -3,27 +3,32 @@ import { db } from "../../firebase";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Flashcard from "./Flashcard";
+import useFlashcards from "./useFlashcards";
 
-const getAllFlashcards = () => {
+const GetAllFlashcards = () => {
   const { user } = useAuth();
   const [flashcards, setFlashcards] = useState([]);
 
+  console.log("PASSING SETFLASHCARDS TO HOOK:", setFlashcards); // Debugging
+
+  // ✅ Fix: Pass setFlashcards when calling useFlashcards
+  const { deleteFlashcard } = useFlashcards(setFlashcards);
+
   useEffect(() => {
+    if (!user) return; // Prevent errors if user is null
+
     const getFlashcards = async () => {
-      const query = collection(db, "users", user.uid, "flashcards");
-      const queryResponse = await getDocs(query);
+      const querySnapshot = await getDocs(
+        collection(db, "users", user.uid, "flashcards"),
+      );
 
-      const flashcardsArray = [];
+      const flashcardsArray = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      queryResponse.forEach((doc) => {
-        flashcardsArray.push({
-          id: doc.id,
-          ...doc.data(),
-        });
-      });
-
+      console.log("SET FLASHCARDS:", flashcardsArray); // Debugging
       setFlashcards(flashcardsArray);
-      console.log(flashcardsArray);
     };
 
     getFlashcards();
@@ -33,17 +38,18 @@ const getAllFlashcards = () => {
     <div>
       <h1>Display all Flashcards</h1>
       {flashcards.map((card) => (
-        <div key={card.id}>
-          <Flashcard
-            query={card.question}
-            response={card.answer}
-            category={card.category}
-            example={card.example}
-          />
-        </div>
+        <Flashcard
+          key={card.id}
+          id={card.id}
+          question={card.question}
+          answer={card.answer}
+          category={card.category}
+          code={card.code}
+          deleteFlashcard={deleteFlashcard} // ✅ Pass delete function properly
+        />
       ))}
     </div>
   );
 };
 
-export default getAllFlashcards;
+export default GetAllFlashcards;

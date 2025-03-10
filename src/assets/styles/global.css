@@ -128,7 +128,7 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply h-[70dvh] w-7/8 lg:max-h-fit;
   }
   .flashcard {
-    @apply m-0 mx-auto my-4 flex h-full w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8 lg:min-w-[30rem];
+    @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8 lg:min-w-[30rem];
   }
   .flashcard-preview {
     @apply m-0 mb-2 min-h-60 md:mb-0;

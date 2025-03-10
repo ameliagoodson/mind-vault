@@ -3,12 +3,14 @@ import Button from "../../components/Button";
 import { MdAccountCircle, MdContentCopy } from "react-icons/md";
 import FlashcardModal from "../Flashcards/FlashcardModal";
 import useToggle from "../../hooks/useToggle";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const ChatComponent = () => {
   const {
     conversation,
-    query,
-    setQuery,
+    question,
+    setQuestion,
     handleSubmit,
     selectedFlashcard,
     setSelectedFlashcard,
@@ -63,9 +65,9 @@ const ChatComponent = () => {
                 </div>
                 {element.code && (
                   <div className="relative mt-2">
-                    <pre className="rounded-md bg-gray-800 p-4 text-white">
+                    <SyntaxHighlighter style={nightOwl} language="javascript">
                       {element.code}
-                    </pre>
+                    </SyntaxHighlighter>
                   </div>
                 )}
                 <div className="btn-container mb-4 flex justify-end">
@@ -92,8 +94,8 @@ const ChatComponent = () => {
       <div className="chat-input mt-2 p-4">
         <textarea
           placeholder="Ask GPT a question"
-          onChange={(event) => setQuery(event.target.value)}
-          value={query}
+          onChange={(event) => setQuestion(event.target.value)}
+          value={question}
           className="w-full border-t border-gray-300"></textarea>
         <div className="btn-container flex">
           <Button

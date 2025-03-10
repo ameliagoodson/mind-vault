@@ -1,7 +1,7 @@
 const apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
 let dataTotal = 0;
 
-export const callOpenAI = async (query, conversation) => {
+export const callOpenAI = async (question, conversation) => {
   // Step 1: Create a variable to store the mapped array
   let conversationMessages = []; // This ensures we always have an array
 
@@ -28,7 +28,7 @@ export const callOpenAI = async (query, conversation) => {
         content: `You are a helpful AI coding assistant and tutor that provides well-structured explanations in Markdown format. If a coding question is asked, provide a code example. When providing code examples, please use proper indentation and line breaks for readability. Write enough code that it is clearly understandable. 
         Always respond in valid JSON with the exact structure:
         {
-          "response": "<answer>",
+          "answer": "<answer>",
           "categories": ["<First Category>", "<Second Category>"],
           "example": "<Only include the raw code. Do not add explanations, but you may include inline comments where necessary (// or /* */).>",
         }
@@ -37,7 +37,7 @@ export const callOpenAI = async (query, conversation) => {
       ...conversationMessages,
       {
         role: "user",
-        content: query,
+        content: question,
       },
     ],
   };

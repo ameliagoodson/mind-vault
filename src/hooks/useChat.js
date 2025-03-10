@@ -5,8 +5,8 @@ import useToggle from "./useToggle";
 export const useChat = () => {
   // ✅ All useState Hooks should be at the top
   const [conversation, setConversation] = useState([]);
-  const [query, setQuery] = useState("");
-  const [response, setResponse] = useState("");
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
   const [category, setCategory] = useState("hello");
   const [code, setCode] = useState("");
   const [resetFlashcardContent, setResetFlashcardContent] = useState(false);
@@ -35,10 +35,10 @@ export const useChat = () => {
   }, [conversation]);
 
   const handleSubmit = () => {
-    if (query.trim() === "") return;
+    if (question.trim() === "") return;
 
-    const currentQuery = query.trim();
-    setQuery("");
+    const currentQuestion = question.trim();
+    setQuestion("");
 
     const requestId = Date.now().toString();
     responseIdRef.current = requestId;
@@ -47,22 +47,26 @@ export const useChat = () => {
       ...prev,
       {
         type: "user",
-        content: currentQuery,
+        content: currentQuestion,
         timestamp: new Date().toISOString(),
       },
     ]);
 
     handleAPIRequest(
-      currentQuery,
+      currentQuestion,
+      setAnswer,
+      setCategory,
+      setCode,
+      setResetFlashcardContent,
       conversation,
-      (responseText) => {
+      (answerText) => {
         if (responseIdRef.current === requestId) {
-          setResponse(responseText);
+          setAnswer(answerText);
           setConversation((prev) => [
             ...prev,
             {
               type: "ai",
-              content: responseText,
+              content: answerText,
               category,
               code,
               timestamp: new Date().toISOString(),
@@ -70,17 +74,14 @@ export const useChat = () => {
           ]);
         }
       },
-      setCategory,
-      setCode,
-      setResetFlashcardContent,
     );
   };
 
   return {
     conversation,
-    query,
-    setQuery,
-    response,
+    question,
+    setQuestion,
+    answer,
     category,
     code,
     resetFlashcardContent,
