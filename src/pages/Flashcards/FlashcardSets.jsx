@@ -9,8 +9,6 @@ const GetAllFlashcards = () => {
   const { user } = useAuth();
   const [flashcards, setFlashcards] = useState([]);
 
-  console.log("PASSING SETFLASHCARDS TO HOOK:", setFlashcards); // Debugging
-
   // ✅ Fix: Pass setFlashcards when calling useFlashcards
   const { deleteFlashcard } = useFlashcards(setFlashcards);
 
@@ -27,7 +25,6 @@ const GetAllFlashcards = () => {
         ...doc.data(),
       }));
 
-      console.log("SET FLASHCARDS:", flashcardsArray); // Debugging
       setFlashcards(flashcardsArray);
     };
 

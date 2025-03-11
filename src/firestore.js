@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { collection, doc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, doc, deleteDoc } from "firebase/firestore";
 
 export const saveToDB = async ({ user, question, answer, category, code }) => {
   if (!user) {

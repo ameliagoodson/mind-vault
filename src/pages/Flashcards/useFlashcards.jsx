@@ -4,8 +4,6 @@ import { useId, useState } from "react";
 import { db } from "../../firebase";
 
 const useFlashcards = (setFlashcards) => {
-  console.log("Received setFlashcards in useFlashcards:", setFlashcards); // Debugging
-
   // Create state variables
   const [editedQuestion, setEditedQuestion] = useState("");
   const [editedAnswer, setEditedAnswer] = useState("");

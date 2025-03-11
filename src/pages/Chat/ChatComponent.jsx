@@ -43,7 +43,7 @@ const ChatComponent = () => {
   };
 
   return (
-    <div className="chat-interface flex flex-1 flex-col overflow-auto rounded-md bg-white">
+    <div className="chat-interface flex h-full flex-1 flex-col rounded-md bg-white">
       <div className="chat-conversation flex-1 overflow-auto p-4">
         {conversation.length === 0 ? (
           <div className="py-4 text-center text-gray-400 italic">
@@ -90,8 +90,8 @@ const ChatComponent = () => {
           )
         )}
       </div>
-
-      <div className="chat-input mt-2 p-4">
+      {/* // */}
+      <div className="chat-input -0 mt-2 flex-shrink-0 p-4">
         <textarea
           placeholder="Ask GPT a question"
           onChange={(event) => setQuestion(event.target.value)}

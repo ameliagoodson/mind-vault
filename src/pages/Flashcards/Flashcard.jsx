@@ -33,9 +33,14 @@ const Flashcard = ({
     setIsSaved,
     setEditMode,
     editFlashcard,
-  } = useFlashcards(question, answer, category, code);
+  } = useFlashcards();
 
   const { user } = useAuth();
+  // let editedCategoriesToString = editedCategories.join(" and ");
+  // let categoriesToString = category.join(" and ");
+  // console.log(editedCategories);
+  // console.log("editedCategoriesToString", editedCategoriesToString);
+  // console.log("categoriesToString", categoriesToString);
   const [modalOpen, setModalOpen] = useState(false);
 
   // RESET
@@ -88,6 +93,31 @@ const Flashcard = ({
               onChange={(event) =>
                 setEditedCode(JSON.stringify(event.target.value))
               }></textarea>
+            <button
+              onClick={() =>
+                saveFlashcard({
+                  question,
+                  answer,
+                  category,
+                  code,
+                  user,
+                  editedQuestion,
+                  editedAnswer,
+                  editedCategories,
+                  editedCode,
+                })
+              }
+              className="btn btn-primary mr-4">
+              Save
+            </button>
+            <Button
+              btntext={"Delete"}
+              onClick={() => deleteFlashcard(id, user)}
+              cssClasses={"btn btn-primary"}></Button>
+            <Button
+              btntext={"Back"}
+              onClick={() => setEditMode(false)}
+              cssClasses={"btn btn-primary"}></Button>
           </div>
         ) : (
           // VIEW
