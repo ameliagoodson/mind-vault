@@ -34,6 +34,17 @@ export const useChat = () => {
     }
   }, [conversation]);
 
+  const handleReset = () => {
+    setQuestion(""); // Clear input field
+    setAnswer(""); // Clear AI response
+    setCategory(""); // Reset category
+    setCode(""); // Clear code-related state
+    setResetFlashcardContent(true); // Trigger reset for flashcard preview
+    setSelectedFlashcard(null); // Clear flashcard selection
+    setConversation([]); // Clear chat conversation
+    localStorage.removeItem("CONVERSATION"); // Clear conversation from localStorage
+  };
+
   const handleSubmit = () => {
     if (question.trim() === "") return;
 
@@ -86,6 +97,7 @@ export const useChat = () => {
     code,
     resetFlashcardContent,
     handleSubmit,
+    handleReset,
     setConversation,
     selectedFlashcard,
     setSelectedFlashcard,

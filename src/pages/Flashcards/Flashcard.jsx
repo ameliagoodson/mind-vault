@@ -19,29 +19,10 @@ const Flashcard = ({
   deleteFlashcard,
 }) => {
   // Defining variables by destructuring
-  const {
-    editedQuestion,
-    editedAnswer,
-    editedCategories,
-    editedCode,
-    isSaved,
-    editMode,
-    setEditedQuestion,
-    setEditedAnswer,
-    setEditedCategories,
-    setEditedCode,
-    setIsSaved,
-    setEditMode,
-    editFlashcard,
-  } = useFlashcards();
+  const { isSaved, editMode, setIsSaved, setEditMode, editFlashcard } =
+    useFlashcards();
 
   const { user } = useAuth();
-  // let editedCategoriesToString = editedCategories.join(" and ");
-  // let categoriesToString = category.join(" and ");
-  // console.log(editedCategories);
-  // console.log("editedCategoriesToString", editedCategoriesToString);
-  // console.log("categoriesToString", categoriesToString);
-  const [modalOpen, setModalOpen] = useState(false);
 
   // RESET
   useEffect(() => {
@@ -62,37 +43,34 @@ const Flashcard = ({
         "flashcard-modal": type === "modal",
       })}>
       <div className="flashcard-body w-full overflow-scroll">
-        {editMode == true ? (
-          // EDIT
-          <div className="edit-mode">
-            <label className="mb-2 text-lg">Front</label>
-            <textarea
-              className="textarea"
-              value={editedQuestion}
-              onChange={(event) =>
-                setEditedQuestion(event.target.value)
-              }></textarea>
-            <label className="mb-2 text-lg">Back</label>
-            <textarea
-              className="textarea textarea-long"
-              value={editedAnswer}
-              onChange={(event) =>
-                setEditedAnswer(event.target.value)
-              }></textarea>
-            <label className="mb-2 text-lg">Categories</label>
-            <textarea
-              className="textarea"
-              value={editedCategories}
-              onChange={(event) =>
-                setEditedCategories(event.target.value)
-              }></textarea>
-            <label className="mb-2 text-lg">Example</label>
-            <textarea
-              className="textarea"
-              value={editedCode}
-              onChange={(event) =>
-                setEditedCode(JSON.stringify(event.target.value))
-              }></textarea>
+        <div className="view-mode">
+          <p className="mb-6">
+            {isSaved ? editedQuestion : question || placeholders.question}
+          </p>
+          <p className="mb-4">
+            {isSaved ? editedAnswer : answer || placeholders.answer}
+          </p>
+          {code ? (
+            <SyntaxHighlighter
+              language="javascript"
+              wrapLongLines={true}
+              style={nightOwl}>
+              {code}
+            </SyntaxHighlighter>
+          ) : (
+            ""
+          )}
+          <span>
+            {isSaved ? editedCategories : category || placeholders.category}
+          </span>
+          <div className="btn-container mt-4 flex">
+            <button
+              onClick={() =>
+                editFlashcard(question, answer, category, code, user)
+              }
+              className="btn btn-primary mr-4">
+              Edit
+            </button>
             <button
               onClick={() =>
                 saveFlashcard({
@@ -114,65 +92,8 @@ const Flashcard = ({
               btntext={"Delete"}
               onClick={() => deleteFlashcard(id, user)}
               cssClasses={"btn btn-primary"}></Button>
-            <Button
-              btntext={"Back"}
-              onClick={() => setEditMode(false)}
-              cssClasses={"btn btn-primary"}></Button>
           </div>
-        ) : (
-          // VIEW
-          <div className="view-mode">
-            <p className="mb-6">
-              {isSaved ? editedQuestion : question || placeholders.question}
-            </p>
-            <p className="mb-4">
-              {isSaved ? editedAnswer : answer || placeholders.answer}
-            </p>
-            {code ? (
-              <SyntaxHighlighter
-                language="javascript"
-                wrapLongLines={true}
-                style={nightOwl}>
-                {code}
-              </SyntaxHighlighter>
-            ) : (
-              ""
-            )}
-            <span>
-              {isSaved ? editedCategories : category || placeholders.category}
-            </span>
-            <div className="btn-container mt-4 flex">
-              <button
-                onClick={() =>
-                  editFlashcard(question, answer, category, code, user)
-                }
-                className="btn btn-primary mr-4">
-                Edit
-              </button>
-              <button
-                onClick={() =>
-                  saveFlashcard({
-                    question,
-                    answer,
-                    category,
-                    code,
-                    user,
-                    editedQuestion,
-                    editedAnswer,
-                    editedCategories,
-                    editedCode,
-                  })
-                }
-                className="btn btn-primary mr-4">
-                Save
-              </button>
-              <Button
-                btntext={"Delete"}
-                onClick={() => deleteFlashcard(id, user)}
-                cssClasses={"btn btn-primary"}></Button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

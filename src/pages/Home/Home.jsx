@@ -8,7 +8,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/flashcards/create");
     }
   }, [user, navigate]);
 

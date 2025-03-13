@@ -12,6 +12,7 @@ const saveFlashcard = ({
   editedQuestion,
   editedAnswer,
   editedCategories,
+  editedCode,
 }) => {
   // Calculate what should be saved
   const questionToSave =
@@ -28,7 +29,11 @@ const saveFlashcard = ({
       : editedCategories;
 
   // Process categories
-  const processedCategories = processCategories(categoryToUse);
+  let processedCategories = [];
+  if (categoryToUse) {
+    processedCategories = processCategories(categoryToUse);
+  }
+
   if (!user || !user.uid) {
     console.error("❌ User not authenticated or missing UID:", user);
     return;
@@ -39,12 +44,13 @@ const saveFlashcard = ({
     question: questionToSave,
     answer: answerToSave,
     category: processedCategories,
-    code: code,
+    code: editedCode,
   });
   return {
     question: questionToSave,
     answer: answerToSave,
     categories: processedCategories,
+    code: editedCode,
     isSaved: true,
   };
 };
