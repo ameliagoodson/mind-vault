@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { collection, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, deleteDoc } from "firebase/firestore";
 
 export const saveToDB = async ({ user, question, answer, category, code }) => {
   if (!user) {
@@ -17,11 +17,10 @@ export const saveToDB = async ({ user, question, answer, category, code }) => {
     const flashcardData = {
       question,
       answer,
-      category,
     };
-
-    console.log("code: ", code);
-    // Only add 'code' if it has a value
+    if (category) {
+      flashcardData.category = category;
+    }
     if (code) {
       flashcardData.code = code;
     }

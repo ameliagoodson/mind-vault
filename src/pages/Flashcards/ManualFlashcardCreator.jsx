@@ -4,13 +4,16 @@ import useToggle from "../../hooks/useToggle";
 import { useState } from "react";
 import Flashcard from "./Flashcard";
 import useLog from "../../hooks/useLog";
+import saveFlashcard from "./saveFlashcard";
+import { useAuth } from "../../context/AuthContext";
 
 const ManualFlashcardCreator = () => {
+  const { user } = useAuth();
   const [flashcards, setFlashcards] = useState([
     {
       question: "",
       answer: "",
-      category: "",
+      categories: "",
       code: "",
     },
   ]);
@@ -21,7 +24,7 @@ const ManualFlashcardCreator = () => {
       {
         question: "",
         answer: "",
-        category: "",
+        categories: "",
         code: "",
       },
     ]);
@@ -31,25 +34,46 @@ const ManualFlashcardCreator = () => {
     setFlashcards(flashcards.filter((_, index) => index !== targetIndex));
   };
 
-  useLog(flashcards);
+  const getUpdatedFlashcards = (index, value, field) => {
+    const updatedFlashcards = [...flashcards]; // Create new array
+    const currentFlashcard = { ...flashcards[index] }; // Create new object - state data must be immutable (new)
+    currentFlashcard[field] = value; // Update the flashcard field
+    updatedFlashcards[index] = currentFlashcard; // Update the flashcard in the flashcard array
+
+    return updatedFlashcards;
+  };
+
+  const updateFlashcard = (index, value, field) => {
+    const newFlashcards = getUpdatedFlashcards(index, value, field);
+    setFlashcards(newFlashcards);
+  };
+
   return (
     <div className="manualflashcardcreator container mx-auto flex h-[80vh] max-w-4xl flex-col">
       <div className="h-[65vh] bg-white">
+        <Button
+          onClick={addNewCard}
+          btntext={"Add flashcard"}
+          cssClasses={"btn btn-primary"}
+        />
         {flashcards.map((card, index) => (
-          <div>
-            <FlashcardForm key={index} cardData={card} />
+          <div key={index} className="flashcard-form-container">
+            <FlashcardForm
+              index={index}
+              hideSaveButton={true}
+              updateFlashcard={updateFlashcard}
+            />
             <Button
               onClick={() => deleteCard(card, index)}
               btntext={"Delete"}
-              cssClasses={"btn btn-primary btn-small"}
+              cssClasses={"btn btn-primary"}
             />
           </div>
         ))}
         <Button
-          onClick={addNewCard}
-          btntext={"Add flashcard"}
-          cssClasses={"btn btn-primary btn-small"}
-        />
+          btntext={"Save all"}
+          cssClasses={"btn btn-primary"}
+          onClick={() => saveFlashcard(flashcards, user)}></Button>
       </div>
     </div>
   );
