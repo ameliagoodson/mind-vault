@@ -5,13 +5,17 @@ import FlashcardModal from "../Flashcards/FlashcardModal";
 import useToggle from "../../hooks/useToggle";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Loading from "../../components/Loading";
+import useLog from "../../hooks/useLog";
 
 const ChatComponent = () => {
   const {
     conversation,
     question,
     setQuestion,
+    handleReset,
     handleSubmit,
+    isLoading,
     selectedFlashcard,
     setSelectedFlashcard,
   } = useChat();
@@ -28,7 +32,7 @@ const ChatComponent = () => {
 
     const question =
       conversation
-        .slice(0, index) // Look at earlier messages
+        .slice(0, index)
         .reverse()
         .find((msg) => msg.type === "user")?.content || "";
 
@@ -39,7 +43,7 @@ const ChatComponent = () => {
       question: question,
     });
 
-    toggleModal();
+    toggleModal(true);
   };
 
   return (
@@ -52,15 +56,19 @@ const ChatComponent = () => {
         ) : (
           conversation.map((element, index) =>
             element.type === "user" ? (
-              <div key={index} className="chat-message chat-user block">
+              <div
+                key={index}
+                className="chat-message chat-user mb-4 rounded-lg p-3">
                 <p className="leading-7">
                   <MdAccountCircle className="mr-1 inline h-6 w-6" />
                   {element.content}
                 </p>
               </div>
             ) : (
-              <div key={index}>
-                <div className="chat-message chat-ai block">
+              <div
+                key={index}
+                className="chat-message chat-ai mb-4 rounded-lg bg-purple-50 p-3">
+                <div>
                   <p className="leading-7">{element.content}</p>
                 </div>
                 {element.code && (
@@ -70,16 +78,16 @@ const ChatComponent = () => {
                     </SyntaxHighlighter>
                   </div>
                 )}
-                <div className="btn-container mb-4 flex justify-end">
-                  <button
+                <div className="btn-container mt-2 flex justify-end">
+                  <Button
                     onClick={() => openFlashcardModal(index)}
-                    className="btn btn-small btn-no-colour mt-0 mr-4">
-                    Convert to Flashcard
-                  </button>
+                    cssClasses="btn btn-small btn-no-colour mt-0 mr-4"
+                    btntext={"Convert to Flashcard"}></Button>
                   <button
                     onClick={() =>
                       navigator.clipboard.writeText(
-                        element.content + "\n" + element.code,
+                        element.content +
+                          (element.code ? "\n\n" + element.code : ""),
                       )
                     }>
                     <MdContentCopy className="icon" />
@@ -89,27 +97,41 @@ const ChatComponent = () => {
             ),
           )
         )}
+        {isLoading && (
+          <div className="chat-message chat-ai mb-4 rounded-lg bg-purple-50 p-3">
+            <Loading />
+          </div>
+        )}
       </div>
-      {/* // */}
+
       <div className="chat-input -0 mt-2 flex-shrink-0 p-4">
         <textarea
           placeholder="Ask GPT a question"
           onChange={(event) => setQuestion(event.target.value)}
           value={question}
-          className="w-full border-t border-gray-300"></textarea>
-        <div className="btn-container flex">
+          className="w-full rounded border-t border-gray-300 p-2"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}></textarea>
+        <div className="btn-container mt-2 flex">
           <Button
             onClick={handleSubmit}
-            btntext={"Submit"}
-            cssClasses={"btn btn-primary mr-2"}
+            btntext={isLoading ? "SENDING..." : "SUBMIT"}
+            cssClasses={`btn btn-primary mr-2 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={isLoading}
           />
           <Button
-            onClick={() => localStorage.removeItem("CONVERSATION")}
-            btntext={"Clear"}
+            onClick={handleReset}
+            btntext={"CLEAR"}
             cssClasses={"btn btn-secondary"}
+            disabled={isLoading}
           />
         </div>
       </div>
+
       {isModalOpen && selectedFlashcard && (
         <FlashcardModal
           code={selectedFlashcard.code}
@@ -118,6 +140,7 @@ const ChatComponent = () => {
           question={selectedFlashcard.question}
           toggleModal={toggleModal}
           isModalOpen={isModalOpen}
+          type={"modal"}
         />
       )}
     </div>

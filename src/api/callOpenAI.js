@@ -1,27 +1,34 @@
 const apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
-let dataTotal = 0;
 
-export const callOpenAI = async (question, conversation) => {
-  // Step 1: Create a variable to store the mapped array
-  let conversationMessages = []; // This ensures we always have an array
+// Store token count in sessionStorage instead of a module variable
+// This allows it to be reset when needed
+const getTokenTotal = () => {
+  const stored = sessionStorage.getItem("openai_token_total");
+  return stored ? parseInt(stored, 10) : 0;
+};
 
-  // Step 2: If conversation exists and is an array, transform its values
-  if (Array.isArray(conversation)) {
-    // ✅ Checks if conversation is actually an array
-    conversationMessages = conversation.map((msg) => {
-      // ✅ Loops through the array
-      return {
-        role: msg.type === "user" ? "user" : "assistant", // ✅ Sets "role" based on msg.type
-        content: msg.content, // ✅ Copies the message content
-      };
-    });
-  }
+const updateTokenTotal = (newTotal) => {
+  sessionStorage.setItem("openai_token_total", newTotal.toString());
+  return newTotal;
+};
+
+// Function to reset the token counter
+export const resetTokenCounter = () => {
+  sessionStorage.removeItem("openai_token_total");
+  console.log("✅ Token counter reset to 0");
+  return 0;
+};
+
+export const callOpenAI = async (question, conversation = []) => {
+  // Convert conversation to the format expected by OpenAI API
+  const conversationMessages = conversation.map((msg) => ({
+    role: msg.type === "user" ? "user" : "assistant",
+    content: msg.content,
+  }));
 
   const apiBody = {
     model: "gpt-4o-mini",
-    response_format: { type: "json_object" }, // Forces JSON mode, but still returns a string
-    // max_tokens: 1500, // Increase to allow longer responses
-    // temperature: 0.7, // Adjust to control randomness
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "system",
@@ -30,11 +37,11 @@ export const callOpenAI = async (question, conversation) => {
         {
           "answer": "<answer>",
           "categories": ["<First Category>", "<Second Category>"],
-          "example": "<Only include the raw code. Do not add explanations, but you may include inline comments where necessary (// or /* */).>",
+          "example": "<Only include the raw code. Do not add explanations, but you may include inline comments where necessary (// or /* */). Do not give code or return anything if it is not a coding question.>",
         }
         Ensure all properties are always included. Never return any additional text outside the JSON object.`,
       },
-      ...conversationMessages,
+      ...conversationMessages.slice(-10), // Only use the last 10 messages to prevent token limit issues
       {
         role: "user",
         content: question,
@@ -43,10 +50,11 @@ export const callOpenAI = async (question, conversation) => {
   };
 
   try {
-    console.log(
-      "Messages being sent to OpenAI:",
-      JSON.stringify(apiBody.messages, null, 2),
-    );
+    console.log("🚀 Sending request to OpenAI:", {
+      model: apiBody.model,
+      messageCount: apiBody.messages.length,
+    });
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       body: JSON.stringify(apiBody),
@@ -56,29 +64,41 @@ export const callOpenAI = async (question, conversation) => {
       },
     });
 
-    let data = await response.json();
-    console.log("API Response:", data);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API error: ${response.status} - ${errorText}`);
+    }
 
-    // Log token usage
+    const data = await response.json();
+    console.log("✅ API Response received");
 
-    // Get tokens used in this response
+    // Track token usage
+    if (data.usage) {
+      const tokensUsed = data.usage.total_tokens;
+      const currentTotal = getTokenTotal();
+      const newTotal = currentTotal + tokensUsed;
+      updateTokenTotal(newTotal);
+      console.log(
+        `Tokens used in this call: ${tokensUsed}, Total: ${newTotal}`,
+      );
+    }
 
-    const tokensUsed = data.usage.total_tokens;
-    dataTotal += tokensUsed;
+    // Extract and parse the JSON string from the response
+    const jsonString = data.choices[0].message.content;
 
-    console.log("Tokens used in this call:", tokensUsed);
-
-    console.log("API response total tokens: ", dataTotal);
-
-    // Extract the JSON string from the response
-    let jsonString = data.choices[0].message.content;
-
-    // Manually parse it into an object
-    let structuredData = JSON.parse(jsonString);
-
-    return structuredData;
+    try {
+      const structuredData = JSON.parse(jsonString);
+      return structuredData;
+    } catch (parseError) {
+      console.error("Error parsing JSON response:", parseError);
+      return {
+        answer: "There was an error processing the AI response.",
+        categories: ["Error"],
+        example: "",
+      };
+    }
   } catch (error) {
     console.error("Error calling OpenAI API:", error);
-    return { response: "Error fetching response", categories: [] };
+    throw error; // Rethrow to be handled by the caller
   }
 };

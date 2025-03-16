@@ -10,19 +10,14 @@ const useFlashcards = (setFlashcards) => {
   const [editedCategories, setEditedCategories] = useState("");
   const [editedCode, setEditedCode] = useState("");
   const [isSaved, setIsSaved] = useState(false);
-  const [editMode, setEditMode] = useState(false);
 
-  // EDIT function to switch to edit mode
-  // Set initial value of inputs to the original question, response and category
-  const editFlashcard = (question, answer, category, code) => {
-    if (!isSaved) {
-      setEditedQuestion(question);
-      setEditedAnswer(answer);
-      setEditedCategories(category);
-      setEditedCode(code);
-    }
-    setEditMode(true);
-  };
+  // Add editedFlashcard state to manage all fields in one object
+  const [editedFlashcard, setEditedFlashcard] = useState({
+    question: "",
+    answer: "",
+    category: "",
+    code: "",
+  });
 
   const deleteFlashcard = async (id, user) => {
     if (!user || !id) {
@@ -56,15 +51,14 @@ const useFlashcards = (setFlashcards) => {
     editedAnswer,
     editedCategories,
     editedCode,
+    editedFlashcard,
     isSaved,
-    editMode,
     setEditedQuestion,
     setEditedAnswer,
     setEditedCategories,
     setEditedCode,
+    setEditedFlashcard,
     setIsSaved,
-    setEditMode,
-    editFlashcard,
     deleteFlashcard,
   };
 };

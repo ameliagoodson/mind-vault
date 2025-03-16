@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const useLog = (dataToLog) => {
   useEffect(() => {
-    console.log(dataToLog);
+    console.log("Use log: ", dataToLog);
   }, [dataToLog]);
 };
 export default useLog;

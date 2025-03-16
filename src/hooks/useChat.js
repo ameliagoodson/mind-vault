@@ -1,21 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { handleAPIRequest } from "../api/openAIUtils";
+import { callOpenAI, resetTokenCounter } from "../api/callOpenAI";
 import useToggle from "./useToggle";
 
 export const useChat = () => {
-  // ✅ All useState Hooks should be at the top
+  // State Hooks
   const [conversation, setConversation] = useState([]);
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [category, setCategory] = useState("hello");
-  const [code, setCode] = useState("");
-  const [resetFlashcardContent, setResetFlashcardContent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const [resetFlashcardContent, setResetFlashcardContent] = useState(false);
 
-  // ✅ Then useRef Hooks
-  const responseIdRef = useRef(null);
-
-  // ✅ Then useEffect Hooks
+  // Load conversation from localStorage on mount
   useEffect(() => {
     const data = localStorage.getItem("CONVERSATION");
     if (data) {
@@ -28,77 +23,104 @@ export const useChat = () => {
     }
   }, []);
 
+  // Save conversation to localStorage whenever it updates
   useEffect(() => {
     if (conversation.length > 0) {
       localStorage.setItem("CONVERSATION", JSON.stringify(conversation));
     }
+
+    // Debug logging (using console.log instead of useLog hook)
+    console.log("Current conversation:", conversation);
   }, [conversation]);
 
+  // Clear conversation and localStorage
   const handleReset = () => {
-    setQuestion(""); // Clear input field
-    setAnswer(""); // Clear AI response
-    setCategory(""); // Reset category
-    setCode(""); // Clear code-related state
-    setResetFlashcardContent(true); // Trigger reset for flashcard preview
-    setSelectedFlashcard(null); // Clear flashcard selection
-    setConversation([]); // Clear chat conversation
-    localStorage.removeItem("CONVERSATION"); // Clear conversation from localStorage
+    setQuestion("");
+    setSelectedFlashcard(null);
+    setResetFlashcardContent(true);
+    setConversation([]); // Clear the conversation
+    localStorage.removeItem("CONVERSATION");
+
+    // Reset the token counter
+    resetTokenCounter();
+
+    console.log("✅ Conversation cleared");
   };
 
-  const handleSubmit = () => {
-    if (question.trim() === "") return;
+  const handleSubmit = async () => {
+    if (isLoading || question.trim() === "") return;
 
     const currentQuestion = question.trim();
-    setQuestion("");
+    setQuestion(""); // Clear input right away
+    setIsLoading(true);
 
-    const requestId = Date.now().toString();
-    responseIdRef.current = requestId;
+    // Add user message to conversation
+    const userMessage = {
+      type: "user",
+      content: currentQuestion,
+      timestamp: new Date().toISOString(),
+    };
 
-    setConversation((prev) => [
-      ...prev,
-      {
-        type: "user",
-        content: currentQuestion,
+    // Update conversation with user message
+    setConversation((prevConversation) => {
+      const updatedConversation = [...prevConversation, userMessage];
+      return updatedConversation;
+    });
+
+    try {
+      // Prepare the conversation messages for API
+      const conversationForAPI = [...conversation, userMessage];
+
+      // Call API
+      console.log("Sending to API:", conversationForAPI);
+      const response = await callOpenAI(currentQuestion, conversationForAPI);
+
+      // Debug logged, helping you verify the response
+      console.log("API Response received:", response);
+
+      // Create AI message
+      const aiMessage = {
+        type: "ai",
+        content: response.answer || "No response from AI",
+        category: response.categories || [],
+        code: response.example || "",
         timestamp: new Date().toISOString(),
-      },
-    ]);
+      };
 
-    handleAPIRequest(
-      currentQuestion,
-      setAnswer,
-      setCategory,
-      setCode,
-      setResetFlashcardContent,
-      conversation,
-      (answerText) => {
-        if (responseIdRef.current === requestId) {
-          setAnswer(answerText);
-          setConversation((prev) => [
-            ...prev,
-            {
-              type: "ai",
-              content: answerText,
-              category,
-              code,
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-        }
-      },
-    );
+      // Update conversation with AI response
+      setConversation((prevConversation) => {
+        return [...prevConversation, aiMessage];
+      });
+
+      // Reset flashcard content flag
+      setResetFlashcardContent(false);
+    } catch (error) {
+      console.error("Error in API call:", error);
+
+      // Add error message to conversation
+      setConversation((prevConversation) => {
+        return [
+          ...prevConversation,
+          {
+            type: "ai",
+            content: "Sorry, there was an error processing your request.",
+            timestamp: new Date().toISOString(),
+          },
+        ];
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
     conversation,
     question,
     setQuestion,
-    answer,
-    category,
-    code,
+    isLoading,
     resetFlashcardContent,
     handleSubmit,
     handleReset,
-    setConversation,
     selectedFlashcard,
     setSelectedFlashcard,
   };

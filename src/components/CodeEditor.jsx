@@ -20,7 +20,16 @@ const CodeEditor = ({ value, onChange, language = "javascript" }) => {
           <SyntaxHighlighter
             language={language}
             style={nightOwl}
-            customStyle={{ minHeight: "150px" }}>
+            customStyle={{
+              margin: "0px",
+              fontFamily: "Poppins",
+              minHeight: "8rem",
+              borderRadius: "0.5rem",
+              padding: "0.5rem",
+            }}
+            codeTagProps={{
+              style: { fontFamily: "Poppins", fontSize: "14px" },
+            }}>
             {value || "// Click to add code"}
           </SyntaxHighlighter>
         </div>

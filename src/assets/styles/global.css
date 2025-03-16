@@ -24,7 +24,7 @@ Secondary: Used for backgrounds, subtle UI elements.
   --font-size-h4: clamp(1rem, 2vw, 1.5rem);
   --font-size-h5: clamp(0.875rem, 1.8vw, 1.25rem);
   --font-size-h6: clamp(0.75rem, 1.5vw, 1.125rem);
-  --font-size-body: clamp(0.75rem, 1.5vw, 1rem);
+  --font-size-body: clamp(0.6rem, 1.2vw, 0.9rem);
 
   --animate-flip: flip 0.6s ease-in-out;
 }
@@ -98,22 +98,25 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply uppercase;
   }
   .btn {
-    @apply mt-4 min-w-24 rounded-2xl px-4 py-1.5 font-semibold shadow-md transition-colors duration-300;
+    @apply mt-4 min-w-24 rounded-2xl px-4 py-1.5 font-semibold shadow-md transition-colors duration-300 hover:cursor-pointer;
   }
   .icon {
-    @apply h-5 w-5 text-black transition-transform duration-200 hover:scale-110;
+    @apply h-6 w-6 text-black transition-transform duration-200 hover:scale-110;
   }
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark mt-4 min-w-24 font-semibold text-white shadow-md;
+    @apply bg-primary hover:bg-primary-dark mt-4 min-w-24 font-semibold text-white;
   }
   .btn-secondary {
-    @apply bg-secondary hover:bg-primary mt-4 min-w-24 font-semibold text-black shadow-md;
+    @apply bg-secondary hover:bg-primary mt-4 min-w-24 font-semibold text-black;
   }
   .btn-small {
     @apply text-xs;
   }
   .btn-no-colour {
     @apply hover:bg-primary bg-none text-black;
+  }
+  .btn-icon {
+    @apply flex h-7 w-7 items-center justify-center hover:cursor-pointer;
   }
 
   textarea,
@@ -128,16 +131,22 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply border-neutral-dark block w-full rounded-lg border bg-white p-2;
   }
   .modal-container {
-    @apply h-[70dvh] w-7/8 lg:max-h-fit;
+    @apply w-7/8 lg:max-h-fit;
   }
+  /* h-[70dvh] */
   .flashcard {
     @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8 lg:min-w-[30rem];
   }
-  .flashcard-preview {
-    @apply m-0 mb-2 min-h-60 md:mb-0;
+
+  .flashcard-small {
+    @apply max-h-[30rem] max-w-[40rem] min-w-[20rem];
   }
+
   .flashcard-modal {
     @apply m-0;
+  }
+  .flashcard-form {
+    @apply w-full;
   }
   .chat-message {
     @apply rounded-lg p-2;
