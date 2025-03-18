@@ -2,14 +2,7 @@ import Flashcard from "./Flashcard";
 import { MdClose } from "react-icons/md";
 import Button from "../../components/Button";
 
-const FlashcardModal = ({
-  question,
-  answer,
-  category,
-  code,
-  isModalOpen,
-  toggleModal,
-}) => {
+const FlashcardModal = ({ flashcard, isModalOpen, toggleModal }) => {
   if (!isModalOpen) return null;
 
   return (
@@ -19,13 +12,7 @@ const FlashcardModal = ({
       <div
         className="modal-container relative z-10 max-w-3xl rounded-lg bg-white shadow-lg"
         onClick={(e) => e.stopPropagation()}>
-        <Flashcard
-          question={question}
-          answer={answer}
-          category={category}
-          code={code}
-          type="modal"
-        />
+        <Flashcard flashcard={flashcard} type="modal" />
         <Button
           onClick={() => toggleModal()}
           cssClasses={"absolute top-2 right-2"}

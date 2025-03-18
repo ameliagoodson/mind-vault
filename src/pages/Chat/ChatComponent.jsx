@@ -6,7 +6,6 @@ import useToggle from "../../hooks/useToggle";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Loading from "../../components/Loading";
-import useLog from "../../hooks/useLog";
 
 const ChatComponent = () => {
   const {
@@ -134,10 +133,12 @@ const ChatComponent = () => {
 
       {isModalOpen && selectedFlashcard && (
         <FlashcardModal
-          code={selectedFlashcard.code}
-          answer={selectedFlashcard.answer}
-          category={selectedFlashcard.category}
-          question={selectedFlashcard.question}
+          flashcard={{
+            code: selectedFlashcard.code,
+            answer: selectedFlashcard.answer,
+            category: selectedFlashcard.category,
+            question: selectedFlashcard.question,
+          }}
           toggleModal={toggleModal}
           isModalOpen={isModalOpen}
           type={"modal"}

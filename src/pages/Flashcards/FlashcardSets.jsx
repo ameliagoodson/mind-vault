@@ -6,7 +6,6 @@ import Flashcard from "./Flashcard";
 import useFlashcards from "./useFlashcards";
 import useToggle from "../../hooks/useToggle";
 import Loading from "../../components/Loading";
-import useLog from "../../hooks/useLog";
 
 const GetAllFlashcards = () => {
   const { user } = useAuth();
@@ -24,10 +23,15 @@ const GetAllFlashcards = () => {
         collection(db, "users", user.uid, "flashcards"),
       );
 
-      const flashcardsArray = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const flashcardsArray = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        console.log("Fetched flashcard doc ID:", doc.id);
+        console.log("Fetched flashcard data:", data);
+        return {
+          id: doc.id,
+          ...data,
+        };
+      });
       setFlashcards(flashcardsArray);
       toggleLoading(false);
     };
@@ -40,18 +44,18 @@ const GetAllFlashcards = () => {
       {loading && <Loading />}
       <h1>Display all Flashcards</h1>
       <div className="flashcards-container grid grid-cols-2 gap-4">
-        {flashcards.map((card) => (
-          <Flashcard
-            key={card.id}
-            id={card.id}
-            question={card.question}
-            answer={card.answer}
-            category={card.category}
-            code={card.code}
-            deleteFlashcard={deleteFlashcard}
-            type={"small"}
-          />
-        ))}
+        {flashcards.map((card) => {
+          console.log("Rendering flashcard with ID:", card.id);
+          return (
+            <Flashcard
+              key={card.id}
+              id={card.id}
+              flashcard={card}
+              deleteFlashcard={deleteFlashcard}
+              type={"small"}
+            />
+          );
+        })}
       </div>
     </div>
   );

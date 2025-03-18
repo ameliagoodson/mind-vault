@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-const useLog = (dataToLog) => {
+const useLog = (dataToLog, label = "Enter a label") => {
   useEffect(() => {
-    console.log("Use log: ", dataToLog);
+    console.log(label, dataToLog);
   }, [dataToLog]);
 };
 export default useLog;

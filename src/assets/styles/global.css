@@ -157,4 +157,7 @@ Secondary: Used for backgrounds, subtle UI elements.
   .chat-ai {
     @apply bg-neutral-light mt-4 mb-2;
   }
+  .loading-container {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
+  }
 }

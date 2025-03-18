@@ -2,12 +2,13 @@ import useFlashcards from "./useFlashcards";
 import saveFlashcard from "./saveFlashcard";
 import Button from "../../components/Button";
 import { useAuth } from "../../context/AuthContext";
-import useLog from "../../hooks/useLog.js";
 import { useEffect, useState } from "react";
 import CodeEditor from "../../components/CodeEditor.jsx";
 import useToggle from "../../hooks/useToggle.js";
 import processCategories from "../../utils/processCategories";
 import { MdCode, MdAbc, MdSave } from "react-icons/md";
+import Loading from "../../components/Loading";
+import useLog from "../../hooks/useLog.js";
 
 const FlashcardForm = ({
   flashcard,
@@ -23,11 +24,13 @@ const FlashcardForm = ({
   const [showCategoriesSection, toggleCategories] = useToggle(false);
   const [showCodeSection, toggleCode] = useToggle(false);
   const [codeMode, toggleCodeMode] = useToggle(false);
+  const [isLoading, toggleLoading] = useToggle(false);
 
   // Initialize editedFlashcard with current flashcard data
   useEffect(() => {
     if (flashcard) {
-      console.log("Setting editedFlashcard with:", flashcard);
+      // console.log("Setting editedFlashcard with:", flashcard);
+
       setEditedFlashcard({
         question: flashcard.question || "",
         answer: flashcard.answer || "",
@@ -37,39 +40,56 @@ const FlashcardForm = ({
     }
   }, [flashcard]);
 
-  const handleSaveFlashcard = () => {
-    const categoryToUse = editedFlashcard.category || flashcard?.category || "";
+  useLog(isLoading, "loading animation on: ");
 
-    let processedCategories = [];
-    if (categoryToUse) {
-      processedCategories = processCategories(categoryToUse);
-    }
+  const handleSaveFlashcard = async () => {
+    toggleLoading(true);
 
-    const updatedFlashcard = {
-      question: editedFlashcard.question || flashcard?.question || "",
-      answer: editedFlashcard.answer || flashcard?.answer || "",
-      category: categoryToUse, // Use the raw category text for UI display
-      code: editedFlashcard.code || flashcard?.code || "",
-    };
+    try {
+      const categoryToUse =
+        editedFlashcard.category || flashcard?.category || "";
 
-    // Save to database with processed categories
-    const saveData = {
-      ...updatedFlashcard,
-      category: processedCategories,
-    };
+      let processedCategories = [];
+      if (categoryToUse) {
+        processedCategories = processCategories(categoryToUse);
+      }
 
-    saveFlashcard([saveData], user);
+      const updatedFlashcard = {
+        id: flashcard?.id, // Include the ID here - this is the key fix!
+        question: editedFlashcard.question || flashcard?.question || "",
+        answer: editedFlashcard.answer || flashcard?.answer || "",
+        category: categoryToUse,
+        code: editedFlashcard.code || flashcard?.code || "",
+      };
 
-    // Update parent component state
-    if (updateFlashcard) {
-      console.log("✅ Sending updated flashcard data to Flashcard.jsx");
-      updateFlashcard(updatedFlashcard);
-    }
+      const saveData = {
+        ...updatedFlashcard,
+        category: processedCategories,
+      };
 
-    // Exit edit mode
-    if (toggleEditing) {
+      // Log to confirm ID is included
+      console.log("Saving flashcard with ID:", saveData.id);
+
+      // Await the save to database
+      await saveFlashcard([saveData], user);
+
+      // Update the parent component's state with the new values
+      if (updateFlashcard) {
+        console.log("Updating parent component with:", updatedFlashcard);
+        updateFlashcard(updatedFlashcard);
+      }
+
       console.log("✅ Flashcard saved & exiting Edit Mode.");
-      toggleEditing(false);
+    } catch (error) {
+      console.error("Error saving flashcard:", error);
+    } finally {
+      // Always run this code whether the save succeeds or fails
+      toggleLoading(false);
+
+      // Exit edit mode if needed
+      if (toggleEditing) {
+        toggleEditing(false);
+      }
     }
   };
 
@@ -101,6 +121,11 @@ const FlashcardForm = ({
                     ...prev,
                     question: event.target.value,
                   }));
+
+                  // ALSO update parent component's state if updateFlashcard exists
+                  if (updateFlashcard && index !== undefined) {
+                    updateFlashcard(index, event.target.value, "question");
+                  }
                 }}
                 required
                 placeholder="This will be the front of your flashcard"
@@ -131,6 +156,10 @@ const FlashcardForm = ({
                 ...prev,
                 answer: event.target.value,
               }));
+              // ALSO update parent component's state if updateFlashcard exists
+              if (updateFlashcard && index !== undefined) {
+                updateFlashcard(index, event.target.value, "answer");
+              }
             }}
             required
             placeholder="This will be the back of your flashcard"
@@ -140,12 +169,12 @@ const FlashcardForm = ({
       <div className="btn-container mb-4 flex">
         <Button
           onClick={() => toggleCategories(true)}
-          btntext={"Add categories"}
+          btntext={"Categories"}
           cssClasses={"btn btn-small btn-no-colour"}
         />
         <Button
           onClick={() => toggleCode(true)}
-          btntext={"Add code example"}
+          btntext={"Code example"}
           cssClasses={"btn btn-small btn-no-colour"}
         />
       </div>
@@ -161,6 +190,10 @@ const FlashcardForm = ({
                 ...prev,
                 category: event.target.value,
               }));
+              // ALSO update parent component's state if updateFlashcard exists
+              if (updateFlashcard && index !== undefined) {
+                updateFlashcard(index, event.target.value, "category");
+              }
             }}
           />
         </div>
@@ -177,6 +210,10 @@ const FlashcardForm = ({
                 ...prev,
                 code: event.target.value,
               }));
+              // ALSO update parent component's state if updateFlashcard exists
+              if (updateFlashcard && index !== undefined) {
+                updateFlashcard(index, event.target.value, "code");
+              }
             }}
           />
         </div>
@@ -194,6 +231,11 @@ const FlashcardForm = ({
             onClick={() => toggleEditing(false)}
             cssClasses={"btn btn-secondary"}
           />
+        </div>
+      )}
+      {isLoading && (
+        <div className="loading-container">
+          <Loading />
         </div>
       )}
     </div>

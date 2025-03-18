@@ -8,24 +8,22 @@ import saveFlashcard from "./saveFlashcard";
 import placeholders from "../../data/placeholders";
 import Button from "../../components/Button";
 import FlashcardForm from "./FlashcardForm";
-import useLog from "../../hooks/useLog";
 import useToggle from "../../hooks/useToggle";
 import { MdEdit, MdSave, MdClose, MdDelete } from "react-icons/md";
 
 const Flashcard = ({
   id,
-  question,
-  answer,
-  category,
-  code,
+  flashcard,
   type,
   resetFlashcardContent,
   deleteFlashcard,
 }) => {
+  const { question, answer, code, category } = flashcard;
   const { isSaved, setIsSaved } = useFlashcards();
   const { user } = useAuth();
   const [isEditing, toggleEditing] = useToggle(false);
   const [flashcardData, setFlashcardData] = useState({
+    id,
     question,
     answer,
     category,
@@ -36,7 +34,11 @@ const Flashcard = ({
 
   // Update flashcardData when props change
   useEffect(() => {
+    console.log("ID from props:", id);
+    console.log("flashcard from props:", flashcard);
+
     setFlashcardData({
+      id,
       question,
       answer,
       category,
@@ -94,7 +96,8 @@ const Flashcard = ({
             <p className="mb-4">
               {flashcardData.answer || placeholders.answer}
             </p>
-            {flashcardData.code ? (
+
+            {flashcardData.code && flashcardData.code.trim() !== "// code" ? (
               <SyntaxHighlighter
                 language="javascript"
                 wrapLongLines={true}
@@ -106,6 +109,7 @@ const Flashcard = ({
             )}
             <span>{flashcardData.category || placeholders.category}</span>
             <div className="btn-container mt-4 flex">
+              {/* EDIT */}
               <Button
                 onClick={() => {
                   // Initialize the editedFlashcard with current values
@@ -121,22 +125,32 @@ const Flashcard = ({
                 icon={<MdEdit className="icon" />}
               />
 
-              {/* {isEditing && ( */}
+              {/* SAVE */}
               <Button
                 onClick={() => {
                   console.log(
                     "🚀 BUTTON CLICKED: Attempting to run saveFlashcard...",
                   );
+                  console.log("ID directly from props:", id); // Check if id is defined
+                  console.log("Entire flashcard prop:", flashcard); // Check the original flashcard object
 
-                  // Save the current flashcardData to database
-                  saveFlashcard([flashcardData], user);
+                  // Create a data object with the ID explicitly included
+                  const dataToSave = {
+                    ...flashcardData,
+                    id, // Include the ID from props directly
+                  };
+
+                  console.log("Data being saved with ID:", dataToSave);
+
+                  // Save with the ID included
+                  saveFlashcard([dataToSave], user);
                   setIsSaved(true);
                 }}
                 cssClasses={"btn-icon mr-4"}
                 icon={<MdSave className="icon" />}
               />
-              {/* )} */}
 
+              {/* DELETE */}
               <Button
                 onClick={() => deleteFlashcard(id, user)}
                 cssClasses={"btn-icon"}

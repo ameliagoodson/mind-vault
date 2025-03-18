@@ -6,7 +6,7 @@ export const useChat = () => {
   // State Hooks
   const [conversation, setConversation] = useState([]);
   const [question, setQuestion] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useToggle(false);
   const [selectedFlashcard, setSelectedFlashcard] = useState(null);
   const [resetFlashcardContent, setResetFlashcardContent] = useState(false);
 
@@ -28,9 +28,6 @@ export const useChat = () => {
     if (conversation.length > 0) {
       localStorage.setItem("CONVERSATION", JSON.stringify(conversation));
     }
-
-    // Debug logging (using console.log instead of useLog hook)
-    console.log("Current conversation:", conversation);
   }, [conversation]);
 
   // Clear conversation and localStorage
