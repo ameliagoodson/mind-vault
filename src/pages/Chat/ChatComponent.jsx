@@ -5,7 +5,7 @@ import FlashcardModal from "../Flashcards/FlashcardModal";
 import useToggle from "../../hooks/useToggle";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
-import Loading from "../../components/Loading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const ChatComponent = () => {
   const {
@@ -23,7 +23,6 @@ const ChatComponent = () => {
 
   const openFlashcardModal = (index) => {
     const aiMessage = conversation[index];
-
     if (!aiMessage) {
       console.error("❌ Error: AI message not found at index", index);
       return;
@@ -89,7 +88,7 @@ const ChatComponent = () => {
                           (element.code ? "\n\n" + element.code : ""),
                       )
                     }>
-                    <MdContentCopy className="icon" />
+                    <MdContentCopy className="icon cursor-pointer" />
                   </button>
                 </div>
               </div>
@@ -98,7 +97,7 @@ const ChatComponent = () => {
         )}
         {isLoading && (
           <div className="chat-message chat-ai mb-4 rounded-lg bg-purple-50 p-3">
-            <Loading />
+            <LoadingSpinner />
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Flashcard from "./Flashcard";
 import useFlashcards from "./useFlashcards";
 import useToggle from "../../hooks/useToggle";
-import Loading from "../../components/Loading";
+import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
 
 const GetAllFlashcards = () => {
   const { user } = useAuth();
@@ -41,11 +41,11 @@ const GetAllFlashcards = () => {
 
   return (
     <div className="container mx-auto flex h-full max-w-7xl flex-col">
-      {loading && <Loading />}
+      {loading && <LoadingSpinnerLarge />}
       <h1>Display all Flashcards</h1>
       <div className="flashcards-container grid grid-cols-2 gap-4">
         {flashcards.map((card) => {
-          console.log("Rendering flashcard with ID:", card.id);
+          // console.log("Rendering flashcard with ID:", card.id);
           return (
             <Flashcard
               key={card.id}

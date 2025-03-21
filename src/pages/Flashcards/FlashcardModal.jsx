@@ -16,7 +16,9 @@ const FlashcardModal = ({ flashcard, isModalOpen, toggleModal }) => {
         <Button
           onClick={() => toggleModal()}
           cssClasses={"absolute top-2 right-2"}
-          icon={<MdClose className="icon h-6 w-6" />}></Button>
+          icon={
+            <MdClose className="icon h-6 w-6 hover:cursor-pointer" />
+          }></Button>
       </div>
     </div>
   );

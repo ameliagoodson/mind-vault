@@ -6,7 +6,10 @@ import Flashcard from "./Flashcard";
 import useLog from "../../hooks/useLog";
 import saveFlashcard from "./saveFlashcard";
 import { useAuth } from "../../context/AuthContext";
-import Loading from "../../components/Loading";
+import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
+import { MdSave } from "react-icons/md";
+import useFlashcards from "./useFlashcards";
+import SaveButton from "../../components/SaveButton";
 
 const ManualFlashcardCreator = () => {
   const { user } = useAuth();
@@ -19,6 +22,7 @@ const ManualFlashcardCreator = () => {
     },
   ]);
   const [isLoading, toggleLoading] = useToggle(false);
+  const { isSaved, setIsSaved } = useFlashcards();
 
   // ADD CARD
   const addNewCard = () => {
@@ -31,6 +35,7 @@ const ManualFlashcardCreator = () => {
         code: "",
       },
     ]);
+    setIsSaved(false);
   };
 
   // DELETE CARD
@@ -51,6 +56,7 @@ const ManualFlashcardCreator = () => {
     } finally {
       // This will run whether the save succeeds or fails
       toggleLoading(false);
+      setIsSaved(true);
     }
   };
 
@@ -73,40 +79,37 @@ const ManualFlashcardCreator = () => {
 
   return (
     <div className="manualflashcardcreator container mx-auto flex h-[80vh] max-w-4xl flex-col">
-      <div className="h-[65vh] bg-white">
-        <Button
-          onClick={addNewCard}
-          btntext={"Add flashcard"}
-          cssClasses={"btn btn-primary"}
-        />
+      <div className="relative bg-white">
+        {/* h-[65vh] */}
         {flashcards.map((card, index) => (
-          <div key={index} className="flashcard-form-container">
+          <div key={index} className="flashcard-form-container mb-4">
             <FlashcardForm
               index={index}
               hideSaveButton={true}
               updateFlashcard={updateFlashcard}
+              deleteCard={() => deleteCard(card, index)}
+              showDeleteButton={flashcards.length > 1 && index > 0}
             />
-
-            {/* Keep one blank flashcard as a placeholder ie don't allow user to delete the first flashcard*/}
-            {flashcards.length > 1 && index > 0 && (
-              <Button
-                onClick={() => deleteCard(card, index)}
-                btntext={"Delete"}
-                cssClasses={"btn btn-primary"}
-              />
-            )}
           </div>
         ))}
-        <Button
-          btntext={"Save all"}
-          cssClasses={"btn btn-primary"}
-          onClick={handleSave}></Button>
-
         {isLoading && (
           <div className="loading-container">
-            <Loading />
+            <LoadingSpinnerLarge size="10rem" />
           </div>
         )}
+      </div>
+      <div className="btn-container mb-4 flex gap-4">
+        <Button
+          onClick={addNewCard}
+          btntext={"Add flashcard"}
+          cssClasses={"add-flashcard-btn btn btn-primary"}
+        />
+        <SaveButton
+          btntext={"Save all"}
+          onClick={handleSave}
+          isSaved={isSaved}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import CodeEditor from "../../components/CodeEditor.jsx";
 import useToggle from "../../hooks/useToggle.js";
 import processCategories from "../../utils/processCategories";
-import { MdCode, MdAbc, MdSave } from "react-icons/md";
-import Loading from "../../components/Loading";
+import { MdCode, MdAbc, MdSave, MdDelete } from "react-icons/md";
+import Loading from "../../components/LoadingSpinner.jsx";
 import useLog from "../../hooks/useLog.js";
+import SaveButton from "../../components/SaveButton.jsx";
+import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge.jsx";
 
 const FlashcardForm = ({
   flashcard,
@@ -16,8 +18,11 @@ const FlashcardForm = ({
   hideSaveButton,
   updateFlashcard,
   toggleEditing,
+  handleSaveSuccess,
+  deleteCard,
+  showDeleteButton,
 }) => {
-  const { editedFlashcard, setEditedFlashcard } = useFlashcards();
+  const { editedFlashcard, setEditedFlashcard, isSaved } = useFlashcards();
 
   const { user } = useAuth();
 
@@ -39,8 +44,6 @@ const FlashcardForm = ({
       });
     }
   }, [flashcard]);
-
-  useLog(isLoading, "loading animation on: ");
 
   const handleSaveFlashcard = async () => {
     toggleLoading(true);
@@ -77,6 +80,7 @@ const FlashcardForm = ({
       if (updateFlashcard) {
         console.log("Updating parent component with:", updatedFlashcard);
         updateFlashcard(updatedFlashcard);
+        handleSaveSuccess();
       }
 
       console.log("✅ Flashcard saved & exiting Edit Mode.");
@@ -94,7 +98,7 @@ const FlashcardForm = ({
   };
 
   return (
-    <div className="flashcard-form p-4">
+    <div className="flashcard-form bg-slate-200 p-4">
       <div className="qanda-container flex w-full flex-col gap-4">
         <div className="question-container flex-1">
           <label className="mb-2 text-lg">Front (Question)</label>
@@ -133,14 +137,18 @@ const FlashcardForm = ({
             )}
             {codeMode ? (
               <Button
-                cssClasses={"bg-white absolute bottom-2 right-2"}
+                cssClasses={
+                  "abc-btn bg-white absolute bottom-2 right-2 hover:cursor-pointer"
+                }
                 onClick={() => toggleCodeMode()}
                 icon={
                   <MdAbc className="icon bg-neutral-dark text-white" />
                 }></Button>
             ) : (
               <Button
-                cssClasses={"bg-white absolute bottom-2 right-2"}
+                cssClasses={
+                  "code-btn bg-white absolute bottom-2 right-2 hover:cursor-pointer"
+                }
                 onClick={() => toggleCodeMode()}
                 icon={<MdCode className="icon" />}></Button>
             )}
@@ -166,17 +174,25 @@ const FlashcardForm = ({
           />
         </div>
       </div>
-      <div className="btn-container mb-4 flex">
+      <div className="btn-container flex gap-4">
         <Button
-          onClick={() => toggleCategories(true)}
+          onClick={() => toggleCategories()}
           btntext={"Categories"}
           cssClasses={"btn btn-small btn-no-colour"}
         />
         <Button
-          onClick={() => toggleCode(true)}
+          onClick={() => toggleCode()}
           btntext={"Code example"}
           cssClasses={"btn btn-small btn-no-colour"}
         />
+        {showDeleteButton && (
+          <Button
+            onClick={deleteCard}
+            btntext={"Delete"}
+            cssClasses={"btn btn-primary"}
+            icon={<MdDelete className="mr-2" />}
+          />
+        )}
       </div>
 
       {showCategoriesSection && (
@@ -190,6 +206,7 @@ const FlashcardForm = ({
                 ...prev,
                 category: event.target.value,
               }));
+
               // ALSO update parent component's state if updateFlashcard exists
               if (updateFlashcard && index !== undefined) {
                 updateFlashcard(index, event.target.value, "category");
@@ -199,31 +216,32 @@ const FlashcardForm = ({
         </div>
       )}
 
-      {showCodeSection && (
-        <div className="code-container">
-          <label className="mb-2 text-lg">Code Example</label>
-          <CodeEditor
-            value={editedFlashcard?.code || ""}
-            language="javascript"
-            onChange={(event) => {
-              setEditedFlashcard((prev) => ({
-                ...prev,
-                code: event.target.value,
-              }));
-              // ALSO update parent component's state if updateFlashcard exists
-              if (updateFlashcard && index !== undefined) {
-                updateFlashcard(index, event.target.value, "code");
-              }
-            }}
-          />
-        </div>
-      )}
+      {showCodeSection ||
+        (flashcard.code && (
+          <div className="code-container">
+            <label className="mb-2 text-lg">Code Example</label>
+            <CodeEditor
+              value={editedFlashcard?.code || ""}
+              language="javascript"
+              onChange={(event) => {
+                setEditedFlashcard((prev) => ({
+                  ...prev,
+                  code: event.target.value,
+                }));
+                // ALSO update parent component's state if updateFlashcard exists
+                if (updateFlashcard && index !== undefined) {
+                  updateFlashcard(index, event.target.value, "code");
+                }
+              }}
+            />
+          </div>
+        ))}
       {!hideSaveButton && (
         <div className="btn-container flex gap-4">
-          <Button
+          <SaveButton
             onClick={handleSaveFlashcard}
-            cssClasses="btn btn-primary"
-            btntext={"Save"}
+            isLoading={isLoading}
+            isSaved={isSaved}
           />
 
           <Button
@@ -235,7 +253,7 @@ const FlashcardForm = ({
       )}
       {isLoading && (
         <div className="loading-container">
-          <Loading />
+          <LoadingSpinnerLarge />
         </div>
       )}
     </div>

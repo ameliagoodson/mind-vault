@@ -10,7 +10,7 @@ const CreateFlashcard = () => {
   return (
     <div className="m-auto h-full w-full max-w-5xl">
       <h1>Create Flashcards</h1>
-      <div className="flashcard-toggle-container max-h-[80vh] overflow-auto bg-white">
+      <div className="flashcard-toggle-container max-h-[80vh] overflow-auto bg-white p-4">
         <div className="toggle-btn-container mx-auto flex flex-row items-center justify-center gap-4">
           <Button
             btntext={"Manual"}

@@ -7,9 +7,12 @@ import useFlashcards from "./useFlashcards";
 import saveFlashcard from "./saveFlashcard";
 import placeholders from "../../data/placeholders";
 import Button from "../../components/Button";
+import SaveButton from "../../components/SaveButton";
 import FlashcardForm from "./FlashcardForm";
 import useToggle from "../../hooks/useToggle";
-import { MdEdit, MdSave, MdClose, MdDelete } from "react-icons/md";
+import { MdEdit, MdClose, MdDelete } from "react-icons/md";
+import useLog from "../../hooks/useLog";
+import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
 
 const Flashcard = ({
   id,
@@ -29,13 +32,13 @@ const Flashcard = ({
     category,
     code,
   });
-
   const { editedFlashcard, setEditedFlashcard } = useFlashcards();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update flashcardData when props change
   useEffect(() => {
-    console.log("ID from props:", id);
-    console.log("flashcard from props:", flashcard);
+    // console.log("ID from props:", id);
+    // console.log("flashcard from props:", flashcard);
 
     setFlashcardData({
       id,
@@ -47,7 +50,7 @@ const Flashcard = ({
   }, [question, answer, category, code]);
 
   useEffect(() => {
-    console.log("isEditing is set to:", isEditing);
+    // console.log("isEditing is set to:", isEditing);
   }, [isEditing]);
 
   // RESET
@@ -65,8 +68,12 @@ const Flashcard = ({
 
   // Handler to update the flashcard with edited data
   const updateFlashcardData = (updatedData) => {
-    console.log("📝 Updating flashcard data:", updatedData);
+    // console.log("📝 Updating flashcard data:", updatedData);
     setFlashcardData(updatedData);
+  };
+
+  const handleSaveSuccess = () => {
+    setIsSaved(true);
   };
 
   return (
@@ -81,6 +88,7 @@ const Flashcard = ({
             flashcard={flashcardData}
             toggleEditing={toggleEditing}
             updateFlashcard={updateFlashcardData}
+            handleSaveSuccess={handleSaveSuccess}
           />
           <Button
             onClick={() => toggleEditing(false)}
@@ -108,7 +116,7 @@ const Flashcard = ({
               ""
             )}
             <span>{flashcardData.category || placeholders.category}</span>
-            <div className="btn-container mt-4 flex">
+            <div className="btn-container my-4 flex gap-4">
               {/* EDIT */}
               <Button
                 onClick={() => {
@@ -121,20 +129,15 @@ const Flashcard = ({
                   });
                   toggleEditing(true);
                 }}
-                cssClasses={"btn-icon mr-4"}
-                icon={<MdEdit className="icon" />}
+                cssClasses={"btn-primary btn "}
+                icon={<MdEdit className="icon-btn" />}
+                btntext={"Edit"}
               />
 
               {/* SAVE */}
-              <Button
-                onClick={() => {
-                  console.log(
-                    "🚀 BUTTON CLICKED: Attempting to run saveFlashcard...",
-                  );
-                  console.log("ID directly from props:", id); // Check if id is defined
-                  console.log("Entire flashcard prop:", flashcard); // Check the original flashcard object
-
-                  // Create a data object with the ID explicitly included
+              <SaveButton
+                onClick={async () => {
+                  setIsLoading(true);
                   const dataToSave = {
                     ...flashcardData,
                     id, // Include the ID from props directly
@@ -143,20 +146,26 @@ const Flashcard = ({
                   console.log("Data being saved with ID:", dataToSave);
 
                   // Save with the ID included
-                  saveFlashcard([dataToSave], user);
+                  await saveFlashcard([dataToSave], user);
+                  setIsLoading(false);
                   setIsSaved(true);
                 }}
-                cssClasses={"btn-icon mr-4"}
-                icon={<MdSave className="icon" />}
+                isSaved={isSaved}
+                isLoading={isLoading}
               />
-
               {/* DELETE */}
               <Button
                 onClick={() => deleteFlashcard(id, user)}
-                cssClasses={"btn-icon"}
-                icon={<MdDelete className="icon" />}></Button>
+                cssClasses={"btn-primary btn "}
+                icon={<MdDelete className="icon-btn" />}
+                btntext={"Delete"}></Button>
             </div>
           </div>
+          {isLoading && (
+            <div className="loading-container">
+              <LoadingSpinnerLarge size="7rem" />
+            </div>
+          )}
         </div>
       )}
     </div>
