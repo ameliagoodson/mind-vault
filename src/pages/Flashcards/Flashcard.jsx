@@ -75,7 +75,6 @@ const Flashcard = ({
   const handleSaveSuccess = () => {
     setIsSaved(true);
   };
-
   return (
     <div
       className={classNames("flashcard relative", {
@@ -98,10 +97,10 @@ const Flashcard = ({
       ) : (
         <div className="flashcard-body h-full w-full overflow-scroll">
           <div className="view-mode flex h-full flex-col justify-between">
-            <p className="mb-6">
+            <p className="question mb-4">
               {flashcardData.question || placeholders.question}
             </p>
-            <p className="mb-4">
+            <p className="answer mb-4">
               {flashcardData.answer || placeholders.answer}
             </p>
 
@@ -115,7 +114,12 @@ const Flashcard = ({
             ) : (
               ""
             )}
-            <span>{flashcardData.category || placeholders.category}</span>
+            {flashcardData.category && (
+              <span className="categories text-neutral-500">
+                {flashcardData.category.join(", ")}
+              </span>
+            )}
+
             <div className="btn-container my-4 flex gap-4">
               {/* EDIT */}
               <Button

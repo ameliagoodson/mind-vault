@@ -5,7 +5,7 @@ import FlashcardModal from "../Flashcards/FlashcardModal";
 import useToggle from "../../hooks/useToggle";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
 
 const ChatComponent = () => {
   const {
@@ -97,7 +97,7 @@ const ChatComponent = () => {
         )}
         {isLoading && (
           <div className="chat-message chat-ai mb-4 rounded-lg bg-purple-50 p-3">
-            <LoadingSpinner />
+            <LoadingSpinnerLarge />
           </div>
         )}
       </div>

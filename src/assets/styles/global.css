@@ -124,7 +124,7 @@ Secondary: Used for backgrounds, subtle UI elements.
 
   textarea,
   .textarea {
-    @apply border-neutral-dark mb-4 block field-sizing-content min-h-[2rem] w-full resize-y rounded-lg border bg-white p-2;
+    @apply border-neutral-light mb-4 block field-sizing-content min-h-[2rem] w-full resize-y rounded-lg border bg-white p-2;
   }
   .textarea-long {
     @apply min-h-[8rem];
@@ -138,7 +138,7 @@ Secondary: Used for backgrounds, subtle UI elements.
   }
   /* h-[70dvh] */
   .flashcard {
-    @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#282e3e1a] md:p-8 lg:min-w-[30rem];
+    @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#666a747a] md:p-8 lg:min-w-[30rem];
   }
 
   .flashcard-small {
@@ -149,7 +149,7 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply m-0;
   }
   .flashcard-form {
-    @apply w-full;
+    @apply w-full rounded-lg bg-slate-100 shadow-[0_0_2rem_0_#666a747a];
   }
   .chat-message {
     @apply rounded-lg p-2;

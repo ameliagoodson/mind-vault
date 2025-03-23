@@ -7,10 +7,11 @@ import CodeEditor from "../../components/CodeEditor.jsx";
 import useToggle from "../../hooks/useToggle.js";
 import processCategories from "../../utils/processCategories";
 import { MdCode, MdAbc, MdSave, MdDelete } from "react-icons/md";
-import Loading from "../../components/LoadingSpinner.jsx";
 import useLog from "../../hooks/useLog.js";
 import SaveButton from "../../components/SaveButton.jsx";
 import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge.jsx";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 
 const FlashcardForm = ({
   flashcard,
@@ -30,6 +31,17 @@ const FlashcardForm = ({
   const [showCodeSection, toggleCode] = useToggle(false);
   const [codeMode, toggleCodeMode] = useToggle(false);
   const [isLoading, toggleLoading] = useToggle(false);
+
+  const categoryOptions = [
+    { value: "Javascript", label: "JavaScript" },
+    { value: "React", label: "React" },
+    { value: "Spot the Bug", label: "Spot the Bug" },
+    { value: "French", label: "French" },
+  ];
+  const [isClearable, setIsClearable] = useState(true);
+  const [isSearchable, setIsSearchable] = useState(true);
+
+  useLog(editedFlashcard, "editedFlashcard is changing");
 
   // Initialize editedFlashcard with current flashcard data
   useEffect(() => {
@@ -58,10 +70,10 @@ const FlashcardForm = ({
       }
 
       const updatedFlashcard = {
-        id: flashcard?.id, // Include the ID here - this is the key fix!
+        id: flashcard?.id,
         question: editedFlashcard.question || flashcard?.question || "",
         answer: editedFlashcard.answer || flashcard?.answer || "",
-        category: categoryToUse,
+        category: processedCategories,
         code: editedFlashcard.code || flashcard?.code || "",
       };
 
@@ -98,10 +110,12 @@ const FlashcardForm = ({
   };
 
   return (
-    <div className="flashcard-form bg-slate-200 p-4">
+    <div className="flashcard-form p-4">
       <div className="qanda-container flex w-full flex-col gap-4">
         <div className="question-container flex-1">
-          <label className="mb-2 text-lg">Front (Question)</label>
+          <label className="flashcard-label mb-2 text-lg">
+            Front (Question)
+          </label>
           <div className="relative">
             {codeMode ? (
               <CodeEditor
@@ -121,10 +135,13 @@ const FlashcardForm = ({
                 className="textarea textarea-long mb-0"
                 value={editedFlashcard?.question || ""}
                 onChange={(event) => {
-                  setEditedFlashcard((prev) => ({
-                    ...prev,
-                    question: event.target.value,
-                  }));
+                  setEditedFlashcard((prev) => {
+                    console.log("I'm changing the question");
+                    return {
+                      ...prev,
+                      question: event.target.value,
+                    };
+                  });
 
                   // ALSO update parent component's state if updateFlashcard exists
                   if (updateFlashcard && index !== undefined) {
@@ -198,44 +215,54 @@ const FlashcardForm = ({
       {showCategoriesSection && (
         <div className="categories-container">
           <label className="mb-2 text-lg">Categories</label>
-          <textarea
-            className="textarea"
-            value={editedFlashcard?.category || ""}
-            onChange={(event) => {
-              setEditedFlashcard((prev) => ({
-                ...prev,
-                category: event.target.value,
-              }));
 
+          <CreatableSelect
+            options={categoryOptions}
+            isClearable={isClearable}
+            isSearchable={isSearchable}
+            defaultValue={editedFlashcard.category?.map((cat) => ({
+              value: cat,
+              label: cat,
+            }))}
+            isMulti
+            onChange={(event) => {
+              setEditedFlashcard((prev) => {
+                return {
+                  ...prev,
+                  category: Array.isArray(event) ? event : [event], // always return an array
+                };
+              });
               // ALSO update parent component's state if updateFlashcard exists
               if (updateFlashcard && index !== undefined) {
-                updateFlashcard(index, event.target.value, "category");
+                updateFlashcard(index, event.value, "category");
               }
             }}
           />
         </div>
       )}
 
-      {showCodeSection ||
-        (flashcard.code && (
-          <div className="code-container">
-            <label className="mb-2 text-lg">Code Example</label>
-            <CodeEditor
-              value={editedFlashcard?.code || ""}
-              language="javascript"
-              onChange={(event) => {
-                setEditedFlashcard((prev) => ({
+      {(showCodeSection || flashcard?.code) && (
+        <div className="code-container mt-4">
+          <label className="mb-2 text-lg">Code Example</label>
+          <CodeEditor
+            value={editedFlashcard?.code || ""}
+            language="javascript"
+            onChange={(event) => {
+              setEditedFlashcard((prev) => {
+                console.log("I'm changing the code");
+                return {
                   ...prev,
                   code: event.target.value,
-                }));
-                // ALSO update parent component's state if updateFlashcard exists
-                if (updateFlashcard && index !== undefined) {
-                  updateFlashcard(index, event.target.value, "code");
-                }
-              }}
-            />
-          </div>
-        ))}
+                };
+              });
+              // ALSO update parent component's state if updateFlashcard exists
+              if (updateFlashcard && index !== undefined) {
+                updateFlashcard(index, event.target.value, "code");
+              }
+            }}
+          />
+        </div>
+      )}
       {!hideSaveButton && (
         <div className="btn-container flex gap-4">
           <SaveButton

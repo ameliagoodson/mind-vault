@@ -25,7 +25,7 @@ const GetAllFlashcards = () => {
 
       const flashcardsArray = querySnapshot.docs.map((doc) => {
         const data = doc.data();
-        console.log("Fetched flashcard doc ID:", doc.id);
+        // console.log("Fetched flashcard doc ID:", doc.id);
         console.log("Fetched flashcard data:", data);
         return {
           id: doc.id,
