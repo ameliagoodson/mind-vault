@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LogoutButton from "../pages/Login/LogoutButton";
-import logo from "../assets/images/logo-mindvault.png";
+import logo from "../assets/images/MindVault_logo.svg";
 import { MdMenu, MdClose } from "react-icons/md";
 import { useState } from "react";
 import useToggle from "../hooks/useToggle";
@@ -11,39 +11,48 @@ const NavBar = () => {
   const [showMobileMenu, toggleMobileMenu] = useToggle();
   return (
     <div>
-      <header className="hidden bg-white px-4 py-2 text-center sm:flex">
-        <img src={logo} alt="" className="block h-6 w-6" />
-        <nav className="hidden h-12 w-full justify-center bg-white bg-auto py-4 text-center text-sm sm:flex">
-          <div className="container mx-auto flex max-w-5xl justify-between">
-            <div className="flex items-center">
-              <Link to="/" className="mr-4">
-                Home
-              </Link>
-            </div>
-            <MdMenu className="md:hidden" />
-            {user ? (
-              <div className="nav-menu-mobile md:menu-desktop flex items-center justify-end">
-                <Link to="/dashboard" className="mr-4">
-                  Dashboard
-                </Link>
-                {/* <Link to="/study" className="mr-4">
+      <header className="hidden w-full justify-around bg-white px-8 py-2 text-center sm:flex">
+        <div className="header-inner container mx-auto flex max-w-5xl items-center">
+          <div className="nav-left container mx-auto flex items-center">
+            <img
+              src={logo}
+              alt="MindVault logo"
+              className="mr-2 block h-6 w-6"
+            />
+            <nav className="flex hidden h-12 items-center justify-center bg-white bg-auto py-4 text-center text-sm sm:flex">
+              <div className="container mx-auto flex max-w-5xl justify-between">
+                <div className="flex items-center">
+                  <Link to="/" className="mr-4">
+                    Home
+                  </Link>
+                </div>
+                <MdMenu className="md:hidden" />
+                {user ? (
+                  <div className="nav-menu-mobile md:menu-desktop flex items-center justify-end">
+                    <Link to="/dashboard" className="mr-4">
+                      Dashboard
+                    </Link>
+                    {/* <Link to="/study" className="mr-4">
                 Study
               </Link> */}
-                <Link to="/flashcards" className="mr-4">
-                  Flashcards
-                </Link>
-                <Link to="/flashcards/create" className="mr-4">
-                  Create Flashcard
-                </Link>
-                {/* <LogoutButton /> */}
+                    <Link to="/flashcards" className="mr-4">
+                      Flashcards
+                    </Link>
+                    <Link to="/flashcards/create" className="mr-4">
+                      Create Flashcard
+                    </Link>
+                    {/* <LogoutButton /> */}
+                  </div>
+                ) : (
+                  <div>
+                    {user ? <LogoutButton /> : <Link to="/login">Login</Link>}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div>
-                {user ? <LogoutButton /> : <Link to="/login">Login</Link>}
-              </div>
-            )}
+            </nav>
           </div>
-        </nav>
+          <div className="nav-right">Logout</div>
+        </div>
       </header>
 
       {/* MOBILE */}

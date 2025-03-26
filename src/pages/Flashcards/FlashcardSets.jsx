@@ -1,61 +1,40 @@
-import { doc, where, getDocs, query, collection } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useAuth } from "../../context/AuthContext";
-import { useState, useEffect } from "react";
 import Flashcard from "./Flashcard";
-import useFlashcards from "./useFlashcards";
-import useToggle from "../../hooks/useToggle";
 import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
+import { useParams } from "react-router";
+import Button from "../../components/Button";
+import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
+import FlashcardsAll from "./FlashcardsAll";
 
 const GetAllFlashcards = () => {
-  const { user } = useAuth();
-  const [flashcards, setFlashcards] = useState([]);
-  const [loading, toggleLoading] = useToggle(true);
-
+  const { category } = useParams();
+  const {
+    user,
+    flashcards,
+    setFlashcards,
+    toggleLoading,
+    loading,
+    setCategoriesList,
+    categoriesList,
+    deleteFlashcard,
+  } = useFetchFlashcards();
   // ✅ Fix: Pass setFlashcards when calling useFlashcards
-  const { deleteFlashcard } = useFlashcards(setFlashcards);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const getFlashcards = async () => {
-      const querySnapshot = await getDocs(
-        collection(db, "users", user.uid, "flashcards"),
-      );
-
-      const flashcardsArray = querySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        // console.log("Fetched flashcard doc ID:", doc.id);
-        console.log("Fetched flashcard data:", data);
-        return {
-          id: doc.id,
-          ...data,
-        };
-      });
-      setFlashcards(flashcardsArray);
-      toggleLoading(false);
-    };
-
-    getFlashcards();
-  }, [user]);
 
   return (
     <div className="container mx-auto flex h-full max-w-7xl flex-col">
       {loading && <LoadingSpinnerLarge />}
-      <h1>Display all Flashcards</h1>
-      <div className="flashcards-container grid grid-cols-2 gap-4">
-        {flashcards.map((card) => {
-          // console.log("Rendering flashcard with ID:", card.id);
-          return (
-            <Flashcard
-              key={card.id}
-              id={card.id}
-              flashcard={card}
-              deleteFlashcard={deleteFlashcard}
-              type={"small"}
-            />
-          );
-        })}
+      <h1>Display Flashcards</h1>
+      <div className="flashcard-categories flex">
+        {categoriesList.map((category, index) => (
+          <Button
+            key={index}
+            btntext={category}
+            cssClasses={"btn-primary btn"}
+            to={`/flashcards/${category}`}
+          />
+        ))}
+      </div>
+      <div className="flashcards-container">
+        <FlashcardsAll />
       </div>
     </div>
   );

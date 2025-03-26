@@ -98,7 +98,7 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply uppercase;
   }
   .btn {
-    @apply mt-4 flex min-w-24 items-center justify-center rounded-2xl px-3 py-1.5 font-semibold shadow-md transition-colors duration-300 hover:cursor-pointer;
+    @apply mt-4 flex max-w-fit min-w-24 items-center justify-center rounded-2xl px-3 py-1.5 font-semibold shadow-md transition-colors duration-300 hover:cursor-pointer;
   }
   .btn-disabled {
     @apply bg-slate-300 text-white hover:cursor-not-allowed;
@@ -136,15 +136,13 @@ Secondary: Used for backgrounds, subtle UI elements.
   .modal-container {
     @apply w-7/8 lg:max-h-fit;
   }
-  /* h-[70dvh] */
+
   .flashcard {
-    @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#666a747a] md:p-8 lg:min-w-[30rem];
+    @apply m-0 mx-auto my-4 flex h-full max-h-fit w-full max-w-full flex-col items-start justify-start rounded-lg bg-white p-4 align-top shadow-[0_0_2rem_0_#666a747a] md:p-8;
   }
-
   .flashcard-small {
-    @apply max-h-fit max-w-[40rem] min-w-[20rem];
+    @apply max-w-[40rem];
   }
-
   .flashcard-modal {
     @apply m-0;
   }
@@ -163,4 +161,10 @@ Secondary: Used for backgrounds, subtle UI elements.
   .loading-container {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
   }
+}
+.grid-cols-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  width: 100%;
+  max-width: 100%;
 }

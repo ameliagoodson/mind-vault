@@ -8,6 +8,7 @@ import ProtectedRoutes from "./pages/Login/ProtectedRoutes";
 import Layout from "./components/Layout.jsx";
 import DashboardUI from "./pages/Dashboard/DashboardUI.jsx";
 import FlashcardSets from "./pages/Flashcards/FlashcardSets.jsx";
+import FlashcardSet from "./pages/Flashcards/FlashcardSet";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
               <Route path="/dashboard" element={<DashboardUI />} />
               <Route path="/study" element={<StudyUI />} />
               {/* <Route path="/study/:categoryId" element={<StudyUI />} /> */}
-              <Route path="/flashcards" element={<FlashcardSets />}></Route>
+              <Route path="/flashcards" element={<FlashcardSets />} />
+              <Route path="/flashcards/:category" element={<FlashcardSet />} />
               <Route
                 path="/flashcards/create"
                 element={<CreateFlashcard />}></Route>

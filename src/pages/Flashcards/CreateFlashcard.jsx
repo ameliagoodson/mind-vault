@@ -9,8 +9,10 @@ const CreateFlashcard = () => {
   const [flashcardModeAI, toggle] = useToggle(true);
   return (
     <div className="m-auto h-full w-full max-w-5xl">
-      <h1>Create Flashcards</h1>
-      <div className="flashcard-toggle-container max-h-[80vh] overflow-auto bg-white p-4">
+      <h1 className="text-h2 pb-4">
+        Create Flashcards: Chat to Generate or Write Your Own
+      </h1>
+      <div className="flashcard-toggle-container max-h-[80%] overflow-auto bg-white p-4">
         <div className="toggle-btn-container mx-auto flex flex-row items-center justify-center gap-4">
           <Button
             btntext={"Manual"}
