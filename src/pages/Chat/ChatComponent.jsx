@@ -46,7 +46,7 @@ const ChatComponent = () => {
 
   return (
     <div className="chat-interface flex h-full flex-1 flex-col rounded-md bg-white">
-      <div className="chat-conversation flex-1 overflow-auto p-4">
+      <div className="chat-conversation flex-1 overflow-auto">
         {conversation.length === 0 ? (
           <div className="py-4 text-center text-gray-400 italic">
             Your conversation will appear here

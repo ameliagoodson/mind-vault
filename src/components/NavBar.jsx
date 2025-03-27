@@ -12,14 +12,14 @@ const NavBar = () => {
   return (
     <div>
       <header className="hidden w-full justify-around bg-white px-8 py-2 text-center sm:flex">
-        <div className="header-inner container mx-auto flex max-w-5xl items-center">
+        <div className="header-inner container mx-auto flex max-w-7xl items-center">
           <div className="nav-left container mx-auto flex items-center">
             <img
               src={logo}
               alt="MindVault logo"
               className="mr-2 block h-6 w-6"
             />
-            <nav className="flex hidden h-12 items-center justify-center bg-white bg-auto py-4 text-center text-sm sm:flex">
+            <nav className="flex h-12 items-center justify-center bg-white bg-auto py-4 text-center text-sm sm:flex">
               <div className="container mx-auto flex max-w-5xl justify-between">
                 <div className="flex items-center">
                   <Link to="/" className="mr-4">
@@ -32,26 +32,27 @@ const NavBar = () => {
                     <Link to="/dashboard" className="mr-4">
                       Dashboard
                     </Link>
-                    {/* <Link to="/study" className="mr-4">
-                Study
-              </Link> */}
                     <Link to="/flashcards" className="mr-4">
                       Flashcards
                     </Link>
                     <Link to="/flashcards/create" className="mr-4">
                       Create Flashcard
                     </Link>
-                    {/* <LogoutButton /> */}
+                    <Link to="/study" className="mr-4">
+                      Study
+                    </Link>
                   </div>
                 ) : (
                   <div>
-                    {user ? <LogoutButton /> : <Link to="/login">Login</Link>}
+                    <Link to="/login">Login</Link>
                   </div>
                 )}
               </div>
             </nav>
           </div>
-          <div className="nav-right">Logout</div>
+          <div className="nav-right">
+            <LogoutButton />
+          </div>
         </div>
       </header>
 
@@ -83,9 +84,9 @@ const NavBar = () => {
                           className="mr-4 text-lg font-medium">
                           Dashboard
                         </Link>
-                        {/* <Link to="/study" className="mr-4">
-                Study
-              </Link> */}
+                        <Link to="/study" className="mr-4">
+                          Study
+                        </Link>
                         <Link
                           to="/flashcards"
                           className="mr-4 text-lg font-medium">

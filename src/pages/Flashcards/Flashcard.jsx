@@ -91,12 +91,12 @@ const Flashcard = ({
           />
           <Button
             onClick={() => toggleEditing(false)}
-            cssClasses={"absolute top-2 right-2"}
+            cssClasses={"absolute top-2 right-2 cursor-pointer"}
             icon={<MdClose className="icon h-6 w-6" />}></Button>
         </>
       ) : (
-        <div className="flashcard-body h-full w-full overflow-scroll">
-          <div className="view-mode flex h-full flex-col justify-between">
+        <div className="flashcard-body flex h-full w-full flex-col overflow-scroll">
+          <div className="view-mode flex flex-1 flex-col justify-between overflow-auto">
             <p className="question mb-4">
               {flashcardData.question || placeholders.question}
             </p>
@@ -108,7 +108,14 @@ const Flashcard = ({
               <SyntaxHighlighter
                 language="javascript"
                 wrapLongLines={true}
-                style={nightOwl}>
+                style={nightOwl}
+                customStyle={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  minHeight: "fit-content",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}>
                 {flashcardData.code}
               </SyntaxHighlighter>
             ) : (
@@ -119,51 +126,50 @@ const Flashcard = ({
                 {flashcardData.category.join(", ")}
               </span>
             )}
+          </div>
+          <div className="btn-container my-4 flex gap-4">
+            {/* EDIT */}
+            <Button
+              onClick={() => {
+                // Initialize the editedFlashcard with current values
+                setEditedFlashcard({
+                  question: flashcardData.question || "",
+                  answer: flashcardData.answer || "",
+                  category: flashcardData.category || "",
+                  code: flashcardData.code || "",
+                });
+                toggleEditing(true);
+              }}
+              cssClasses={"btn-primary btn "}
+              icon={<MdEdit className="icon-btn" />}
+              btntext={"Edit"}
+            />
 
-            <div className="btn-container my-4 flex gap-4">
-              {/* EDIT */}
-              <Button
-                onClick={() => {
-                  // Initialize the editedFlashcard with current values
-                  setEditedFlashcard({
-                    question: flashcardData.question || "",
-                    answer: flashcardData.answer || "",
-                    category: flashcardData.category || "",
-                    code: flashcardData.code || "",
-                  });
-                  toggleEditing(true);
-                }}
-                cssClasses={"btn-primary btn "}
-                icon={<MdEdit className="icon-btn" />}
-                btntext={"Edit"}
-              />
+            {/* SAVE */}
+            <SaveButton
+              onClick={async () => {
+                setIsLoading(true);
+                const dataToSave = {
+                  ...flashcardData,
+                  id, // Include the ID from props directly
+                };
 
-              {/* SAVE */}
-              <SaveButton
-                onClick={async () => {
-                  setIsLoading(true);
-                  const dataToSave = {
-                    ...flashcardData,
-                    id, // Include the ID from props directly
-                  };
+                console.log("Data being saved with ID:", dataToSave);
 
-                  console.log("Data being saved with ID:", dataToSave);
-
-                  // Save with the ID included
-                  await saveFlashcard([dataToSave], user);
-                  setIsLoading(false);
-                  setIsSaved(true);
-                }}
-                isSaved={isSaved}
-                isLoading={isLoading}
-              />
-              {/* DELETE */}
-              <Button
-                onClick={() => deleteFlashcard(id, user)}
-                cssClasses={"btn-primary btn "}
-                icon={<MdDelete className="icon-btn" />}
-                btntext={"Delete"}></Button>
-            </div>
+                // Save with the ID included
+                await saveFlashcard([dataToSave], user);
+                setIsLoading(false);
+                setIsSaved(true);
+              }}
+              isSaved={isSaved}
+              isLoading={isLoading}
+            />
+            {/* DELETE */}
+            <Button
+              onClick={() => deleteFlashcard(id, user)}
+              cssClasses={"btn-primary btn "}
+              icon={<MdDelete className="icon-btn" />}
+              btntext={"Delete"}></Button>
           </div>
           {isLoading && (
             <div className="loading-container">
