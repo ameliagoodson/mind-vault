@@ -34,6 +34,7 @@ const Flashcard = ({
   });
   const { editedFlashcard, setEditedFlashcard } = useFlashcards();
   const [isLoading, setIsLoading] = useState(false);
+  console.log("The type of flashcard is: ", type);
 
   // Update flashcardData when props change
   useEffect(() => {
@@ -80,6 +81,7 @@ const Flashcard = ({
       className={classNames("flashcard relative", {
         "flashcard-small": type === "small",
         "flashcard-modal": type === "modal",
+        "flashcard-single": type === "single",
       })}>
       {isEditing ? (
         <>

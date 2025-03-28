@@ -29,6 +29,7 @@ const StudyUI = () => {
   const { flashcards, setFlashcards, categoriesList } = useFetchFlashcards();
 
   useLog(flashcards, "flashcards");
+
   return (
     <div className="container mx-auto max-w-5xl bg-gray-50 p-6">
       {!category ? (
@@ -55,7 +56,8 @@ const StudyUI = () => {
           <h1 className="text-center text-3xl font-bold">
             Studying: {category}
           </h1>
-          <FlashcardSet category={category} studyMode={true} />
+
+          <FlashcardSet category={category} studyMode={true} type={"single"} />
         </>
       )}
     </div>

@@ -162,6 +162,9 @@ Secondary: Used for backgrounds, subtle UI elements.
   .flashcard-modal {
     @apply m-0;
   }
+  .flashcard-single {
+    @apply aspect-[5/3];
+  }
   .flashcard-form {
     @apply w-full overflow-auto rounded-lg bg-slate-100 shadow-[0_0_2rem_0_#666a747a];
   }

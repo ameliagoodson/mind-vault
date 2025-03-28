@@ -10,7 +10,7 @@ const FlashcardSetUI = () => {
   return (
     <div className="flashcard-set w-full">
       <FlashcardCategoriesBtns basePath="/flashcards" />
-      <FlashcardSet />
+      <FlashcardSet type={"grid"} />
     </div>
   );
 };
