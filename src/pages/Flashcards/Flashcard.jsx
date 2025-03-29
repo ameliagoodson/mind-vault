@@ -13,6 +13,7 @@ import useToggle from "../../hooks/useToggle";
 import { MdEdit, MdClose, MdDelete } from "react-icons/md";
 import useLog from "../../hooks/useLog";
 import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge";
+import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 
 const Flashcard = ({
   id,
@@ -20,11 +21,16 @@ const Flashcard = ({
   type,
   resetFlashcardContent,
   deleteFlashcard,
+  isFlipped,
+  setIsFlipped,
 }) => {
   const { question, answer, code, category } = flashcard;
-  const { isSaved, setIsSaved } = useFlashcards();
+  const { setFlashcards } = useFetchFlashcards();
+  const { isSaved, setIsSaved, editedFlashcard, setEditedFlashcard } =
+    useFlashcards();
   const { user } = useAuth();
   const [isEditing, toggleEditing] = useToggle(false);
+
   const [flashcardData, setFlashcardData] = useState({
     id,
     question,
@@ -32,15 +38,12 @@ const Flashcard = ({
     category,
     code,
   });
-  const { editedFlashcard, setEditedFlashcard } = useFlashcards();
+
   const [isLoading, setIsLoading] = useState(false);
-  console.log("The type of flashcard is: ", type);
+  const [showCategories, setShowCategories] = useState(false);
 
   // Update flashcardData when props change
   useEffect(() => {
-    // console.log("ID from props:", id);
-    // console.log("flashcard from props:", flashcard);
-
     setFlashcardData({
       id,
       question,
@@ -82,7 +85,8 @@ const Flashcard = ({
         "flashcard-small": type === "small",
         "flashcard-modal": type === "modal",
         "flashcard-single": type === "single",
-      })}>
+      })}
+      onClick={() => setIsFlipped()}>
       {isEditing ? (
         <>
           <FlashcardForm
@@ -97,36 +101,50 @@ const Flashcard = ({
             icon={<MdClose className="icon h-6 w-6" />}></Button>
         </>
       ) : (
+        // FLASHCARD
         <div className="flashcard-body flex h-full w-full flex-col overflow-scroll">
           <div className="view-mode flex flex-1 flex-col justify-between overflow-auto">
-            <p className="question mb-4">
-              {flashcardData.question || placeholders.question}
-            </p>
-            <p className="answer mb-4">
-              {flashcardData.answer || placeholders.answer}
-            </p>
-
-            {flashcardData.code && flashcardData.code.trim() !== "// code" ? (
-              <SyntaxHighlighter
-                language="javascript"
-                wrapLongLines={true}
-                style={nightOwl}
-                customStyle={{
-                  overflowX: "auto",
-                  overflowY: "auto",
-                  minHeight: "fit-content",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                }}>
-                {flashcardData.code}
-              </SyntaxHighlighter>
+            {!isFlipped ? (
+              // FRONT OF FLASHCARD
+              <div className="flex h-full flex-col items-center justify-center">
+                <p className="question max-w-full text-center text-3xl">
+                  {flashcardData.question || placeholders.question}
+                </p>
+              </div>
             ) : (
-              ""
-            )}
-            {flashcardData.category && (
-              <span className="categories text-neutral-500">
-                {flashcardData.category.join(", ")}
-              </span>
+              // BACK OF FLASHCARD
+              <div className="flex h-full flex-col items-center justify-between">
+                <div className="flex h-full flex-col items-center justify-center">
+                  <p className="answer max-w-full text-center text-xl">
+                    {flashcardData.answer || placeholders.answer}
+                  </p>
+                </div>
+
+                {flashcardData.code &&
+                flashcardData.code.trim() !== "// code" ? (
+                  <SyntaxHighlighter
+                    language="javascript"
+                    wrapLongLines={true}
+                    style={nightOwl}
+                    customStyle={{
+                      overflowX: "auto",
+                      overflowY: "auto",
+                      minHeight: "fit-content",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}>
+                    {flashcardData.code}
+                  </SyntaxHighlighter>
+                ) : (
+                  ""
+                )}
+
+                {flashcardData.category && showCategories && (
+                  <span className="categories text-neutral-500">
+                    {flashcardData.category.join(", ")}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <div className="btn-container my-4 flex gap-4">

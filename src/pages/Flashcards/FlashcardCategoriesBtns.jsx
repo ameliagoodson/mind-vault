@@ -26,6 +26,15 @@ const FlashcardCategoriesBtns = ({ basePath = "/flashcards" }) => {
 
 const FlashcardCategoriesBtnsBlock = ({ basePath = "/study" }) => {
   const { flashcards, categoriesList } = useFetchFlashcards();
+  // Debugging: Check for undefined categories
+  flashcards.forEach((flashcard, index) => {
+    if (!flashcard.category) {
+      console.warn(
+        `⚠️ Flashcard at index ${index} has an undefined category:`,
+        flashcard,
+      );
+    }
+  });
   return (
     <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
       {/* "All Flashcards" Button */}
@@ -35,24 +44,30 @@ const FlashcardCategoriesBtnsBlock = ({ basePath = "/study" }) => {
         All Flashcards <br />
         <span className="text-sm font-normal">({flashcards.length} cards)</span>
       </Link>
-
       {/* Category Buttons */}
-      {categoriesList.map((cat) => (
-        <Link
-          key={cat}
-          to={`${basePath}/${cat}`}
-          className="block rounded-lg bg-purple-500 py-4 text-center text-lg font-semibold text-white shadow-md transition hover:bg-purple-600">
-          {cat} <br />
-          <span className="text-sm font-normal">
-            (
-            {
-              flashcards.filter((flashcard) => flashcard.category.includes(cat))
-                .length
-            }{" "}
-            cards)
-          </span>
-        </Link>
-      ))}
+      {categoriesList.length > 0 &&
+        categoriesList.map(
+          (cat) =>
+            cat && (
+              <Link
+                key={cat}
+                to={`${basePath}/${cat}`}
+                className="block rounded-lg bg-purple-500 py-4 text-center text-lg font-semibold text-white shadow-md transition hover:bg-purple-600">
+                {cat} <br />
+                <span className="text-sm font-normal">
+                  (
+                  {
+                    flashcards.filter(
+                      (flashcard) =>
+                        Array.isArray(flashcard.category) &&
+                        flashcard.category.includes(cat),
+                    ).length
+                  }{" "}
+                  cards)
+                </span>
+              </Link>
+            ),
+        )}
     </div>
   );
 };

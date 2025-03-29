@@ -1,49 +1,25 @@
-import { deleteDoc, doc } from "firebase/firestore";
+// Manages editing and deleting of flashcards
+
 import { saveToDB } from "../../firestore";
 import { useId, useState } from "react";
-import { db } from "../../firebase";
+import useToggle from "../../hooks/useToggle";
 
-const useFlashcards = (setFlashcards) => {
+const useFlashcards = () => {
   // Create state variables
   const [editedQuestion, setEditedQuestion] = useState("");
   const [editedAnswer, setEditedAnswer] = useState("");
   const [editedCategories, setEditedCategories] = useState("");
   const [editedCode, setEditedCode] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+  const [isFlipped, setIsFlipped] = useToggle(false);
 
   // Add editedFlashcard state to manage all fields in one object
   const [editedFlashcard, setEditedFlashcard] = useState({
     question: "",
     answer: "",
-    category: "",
+    category: [],
     code: "",
   });
-
-  const deleteFlashcard = async (id, user) => {
-    if (!user || !id) {
-      console.error("❌ ERROR: Missing user or flashcard ID", { user, id });
-      return;
-    }
-
-    try {
-      console.log("🟢 Attempting to delete flashcard with ID:", id);
-
-      const docRef = doc(db, "users", user.uid, "flashcards", id);
-      console.log("✅ docRef created:", docRef);
-
-      await deleteDoc(docRef);
-      console.log("🗑️ Flashcard deleted successfully from Firestore!");
-
-      setFlashcards((prev = []) => {
-        console.log("🔥 Before deleting, flashcards are:", prev);
-        return prev.filter((card) => card.id !== id);
-      });
-
-      console.log("✅ State updated, flashcard removed from UI");
-    } catch (error) {
-      console.error("❌ Error deleting flashcard:", error);
-    }
-  };
 
   // Return all the functions and state values the component needs
   return {
@@ -59,7 +35,8 @@ const useFlashcards = (setFlashcards) => {
     setEditedCode,
     setEditedFlashcard,
     setIsSaved,
-    deleteFlashcard,
+    isFlipped,
+    setIsFlipped,
   };
 };
 export default useFlashcards;

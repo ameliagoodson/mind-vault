@@ -12,6 +12,7 @@ import SaveButton from "../../components/SaveButton.jsx";
 import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge.jsx";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
+import { useFetchFlashcards } from "../../hooks/useFetchFlashcards.js";
 
 const FlashcardForm = ({
   flashcard,
@@ -23,6 +24,7 @@ const FlashcardForm = ({
   deleteCard,
   showDeleteButton,
 }) => {
+  const { setFlashcards } = useFetchFlashcards();
   const { editedFlashcard, setEditedFlashcard, isSaved } = useFlashcards();
 
   const { user } = useAuth();

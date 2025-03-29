@@ -72,7 +72,7 @@ const NavBar = () => {
                     className="z-20 inline-flex h-6 w-6"
                     onClick={() => toggleMobileMenu()}></MdClose>
                 </div>
-                <nav className="top-[40px] right-0 z-10 flex h-full flex-col bg-white bg-auto p-4 py-4 text-right text-sm">
+                <nav className="top-[3rem] right-0 z-10 flex h-full flex-col bg-white bg-auto p-4 py-4 text-right text-sm">
                   <div className="container mx-auto flex max-w-5xl flex-col space-y-4">
                     <Link to="/" className="mr-4 mb-4 text-lg font-medium">
                       Home

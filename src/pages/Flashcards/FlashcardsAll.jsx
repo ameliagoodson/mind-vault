@@ -2,9 +2,11 @@ import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 import Flashcard from "./Flashcard";
 import { useParams } from "react-router";
 import useLog from "../../hooks/useLog";
+import useFlashcards from "./useFlashcards";
 
 const FlashcardsAll = () => {
-  const { flashcards, deleteFlashcard } = useFetchFlashcards();
+  const { flashcards, setFlashcards, deleteFlashcard } = useFetchFlashcards();
+  const { isFlipped, setIsFlipped } = useFlashcards();
 
   return (
     <div className="all-flashcards mt-8 w-full">
@@ -16,6 +18,8 @@ const FlashcardsAll = () => {
             flashcard={card}
             deleteFlashcard={deleteFlashcard}
             type={"small"}
+            isFlipped={isFlipped}
+            setIsFlipped={setIsFlipped}
           />
         ))}
       </div>

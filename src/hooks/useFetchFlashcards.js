@@ -1,6 +1,10 @@
+// Manages retrieval of flashcards from Firestore
+// Creates an array of flashcards
+// Creates a list of categories used in flashcards
+
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
 import useFlashcards from "../pages/Flashcards/useFlashcards";
 import useToggle from "./useToggle";
 import { db } from "../firebase";
@@ -11,7 +15,6 @@ export const useFetchFlashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
   const [loading, toggleLoading] = useToggle(true);
-  const { deleteFlashcard } = useFlashcards(setFlashcards);
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +47,32 @@ export const useFetchFlashcards = () => {
 
     getFlashcards();
   }, [user]);
+
+  const deleteFlashcard = async (id, user) => {
+    if (!user || !id) {
+      console.error("❌ ERROR: Missing user or flashcard ID", { user, id });
+      return;
+    }
+
+    try {
+      console.log("🟢 Attempting to delete flashcard with ID:", id);
+
+      const docRef = doc(db, "users", user.uid, "flashcards", id);
+      console.log("✅ docRef created:", docRef);
+
+      await deleteDoc(docRef);
+      console.log("🗑️ Flashcard deleted successfully from Firestore!");
+
+      setFlashcards((prev = []) => {
+        console.log("🔥 Before deleting, flashcards are:", prev);
+        return prev.filter((card) => card.id !== id);
+      });
+
+      console.log("✅ State updated, flashcard removed from UI");
+    } catch (error) {
+      console.error("❌ Error deleting flashcard:", error);
+    }
+  };
   return {
     user,
     flashcards,

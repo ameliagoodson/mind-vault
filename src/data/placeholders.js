@@ -2,7 +2,7 @@
 const placeholders = {
   question: "Question",
   answer: "Answer",
-  category: "Category",
+  category: [],
 };
 
-export default placeholders
+export default placeholders;

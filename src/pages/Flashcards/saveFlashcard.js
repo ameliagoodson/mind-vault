@@ -1,6 +1,7 @@
 import { saveToDB } from "../../firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import placeholders from "../../data/placeholders";
 
 const saveFlashcard = async (flashcards, user) => {
   console.log(
@@ -49,8 +50,8 @@ const saveFlashcard = async (flashcards, user) => {
           user,
           question: flashcardData.question,
           answer: flashcardData.answer,
-          category: flashcardData.category,
-          code: flashcardData.code,
+          category: flashcardData.category || [],
+          code: flashcardData.code || "",
         });
 
         console.log("✅ New flashcard saved successfully");

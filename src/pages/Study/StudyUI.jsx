@@ -7,7 +7,9 @@ import {
 import FlashcardSet from "../Flashcards/FlashcardSet";
 import { useParams } from "react-router";
 import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
+import useFlashcards from "../Flashcards/useFlashcards";
 import useLog from "../../hooks/useLog";
+import { useState } from "react";
 
 // how do we get here? click on study
 // shows list of categories to study "click to study"
@@ -27,19 +29,26 @@ import useLog from "../../hooks/useLog";
 const StudyUI = () => {
   const { category } = useParams();
   const { flashcards, setFlashcards, categoriesList } = useFetchFlashcards();
+  const { isFlipped, setIsFlipped } = useFlashcards();
+  const [currentCard, setCurrentCard] = useState(0);
 
-  useLog(flashcards, "flashcards");
+  const handleCurrentCardChange = (index) => {
+    setCurrentCard(index);
+  };
 
   return (
-    <div className="container mx-auto max-w-5xl bg-gray-50 p-6">
+    <div className="studyui container mx-auto flex h-full max-h-full max-w-5xl flex-col overflow-hidden bg-gray-50 p-6">
       {!category ? (
-        <>
+        <div className="study-stats h-max">
           <h1 className="text-center text-3xl font-bold">Study Mode</h1>
           {/* Study Stats */}
           <div className="mt-6 rounded-lg bg-white p-4 text-center shadow-md">
             <h2 className="text-xl font-semibold">Your Study Progress</h2>
             <p>
               Total Flashcards: <strong>{flashcards.length}</strong>
+            </p>
+            <p>
+              Total Categories: <strong>{categoriesList.length}</strong>
             </p>
             <p>
               Flashcards Studied Today: <strong>12</strong> (placeholder)
@@ -50,14 +59,30 @@ const StudyUI = () => {
           </div>
 
           <FlashcardCategoriesBtnsBlock />
-        </>
+        </div>
       ) : (
         <>
-          <h1 className="text-center text-3xl font-bold">
+          <h1 className="mb-4 text-center text-3xl font-bold">
             Studying: {category}
           </h1>
-
-          <FlashcardSet category={category} studyMode={true} type={"single"} />
+          <div className="studyui-flashcard-ui flex h-full flex-1 flex-col overflow-hidden">
+            <FlashcardSet
+              category={category}
+              studyMode={true}
+              type={"single"}
+              setIsFlipped={setIsFlipped}
+              isFlipped={isFlipped}
+              handleCurrentCardChange={handleCurrentCardChange}
+              currentCard={currentCard}
+              setCurrentCard={setCurrentCard}
+            />
+            {flashcards.length > 0 && (
+              <FlashcardNavigation
+                currentCard={currentCard}
+                setCurrentCard={setCurrentCard}
+              />
+            )}
+          </div>
         </>
       )}
     </div>

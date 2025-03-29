@@ -22,7 +22,7 @@ const SaveButton = ({ isLoading, isSaved, btntext, onClick }) => {
     if (isLoading) {
       return (
         <>
-          <LoadingSpinner size="16px" className="mr-2 text-white" />
+          <LoadingSpinner size="1rem" className="mr-2 text-white" />
         </>
       );
     }

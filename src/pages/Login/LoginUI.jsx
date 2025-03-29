@@ -16,7 +16,7 @@ const Login = () => {
   // Redirect authenticated user to dashboard
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/study");
     }
   }, [user, navigate]);
 
@@ -58,8 +58,7 @@ const Login = () => {
         <p>Error: {error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
-        >
+          className="mt-2 rounded bg-blue-500 px-4 py-2 text-white">
           Retry
         </button>
       </div>
@@ -74,8 +73,7 @@ const Login = () => {
           <h1>Welcome, {user.email}!</h1>
           <button
             onClick={onLogout}
-            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-          >
+            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600">
             Logout
           </button>
         </div>

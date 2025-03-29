@@ -5,14 +5,29 @@ import { useParams } from "react-router";
 import useLog from "../../hooks/useLog";
 import { FlashcardCategoriesBtns } from "./FlashcardCategoriesBtns";
 import { useFilterFlashcards } from "../../hooks/useFilterFlashcards.js";
+import useFlashcards from "./useFlashcards.jsx";
 
-const FlashcardSet = ({ type, studyMode }) => {
+const FlashcardSet = ({
+  type,
+  studyMode,
+  isFlipped,
+  setIsFlipped,
+  handleCurrentCardChange,
+  currentCard,
+  deleteFlashcard,
+  setCurrentCard,
+}) => {
   const { category: paramCategory } = useParams();
   const { filteredFlashcards } = useFilterFlashcards(paramCategory);
-  const [currentCard, setCurrentCard] = useState(0);
+
+  useEffect(() => {
+    currentCard && handleCurrentCardChange(currentCard);
+  }, [currentCard]);
+
+  console.log("currentcard from flashcardset: ", currentCard);
 
   return (
-    <div>
+    <div className="flashcard-set flex h-full flex-1">
       {type === "grid" && (
         <div className="grid-cols-auto-fit grid w-full gap-4">
           {console.log("confirming the grid check has been passed")}
@@ -21,7 +36,14 @@ const FlashcardSet = ({ type, studyMode }) => {
             ? filteredFlashcards.map((card, index) => {
                 console.log(`🃏 Mapping flashcard #${index + 1}:`, card);
                 return (
-                  <Flashcard key={card.id} flashcard={card} type={"small"} />
+                  <Flashcard
+                    key={card.id}
+                    flashcard={card}
+                    type={"small"}
+                    isFlipped={isFlipped}
+                    setIsFlipped={setIsFlipped}
+                    deleteFlashcard={deleteFlashcard}
+                  />
                 );
               })
             : (console.log("there are no results"),
@@ -32,6 +54,9 @@ const FlashcardSet = ({ type, studyMode }) => {
         <Flashcard
           flashcard={filteredFlashcards[currentCard]}
           type={"single"}
+          isFlipped={isFlipped}
+          setIsFlipped={setIsFlipped}
+          deleteFlashcard={deleteFlashcard}
         />
       )}
     </div>

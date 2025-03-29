@@ -2,18 +2,36 @@
 // ✅ Shows progress (e.g., "Card 1 of 10")
 // ✅ Calls a function to change the active flashcard
 
-const FlashcardNavigation = () => {
+import { useFilterFlashcards } from "../../hooks/useFilterFlashcards";
+
+const FlashcardNavigation = ({ currentCard, setCurrentCard }) => {
+  const { filteredFlashcards } = useFilterFlashcards();
+
+  console.log("card:", filteredFlashcards[currentCard]);
+  console.log("card index: ", currentCard);
+
+  const handleNavigation = (navigation) => {
+    const current = currentCard;
+    const length = filteredFlashcards.length;
+
+    if (navigation === "prev" && number > 0) {
+      const newCardIndex = current - 1;
+      setCurrentCard(newCardIndex);
+    } else if (number === 1 && number < length) {
+      const newCardIndex = current + 1;
+      setCurrentCard(newCardIndex);
+    }
+  };
   return (
     <div className="mx-auto flex max-w-72 items-center justify-between">
-      <button>
+      <button onClick={() => handleNavigation("prev")}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.2}
           stroke="currentColor"
-          className="text-primary hover:text-primary-dark h-14 w-14"
-        >
+          className="text-primary hover:text-primary-dark h-14 w-14">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -22,17 +40,18 @@ const FlashcardNavigation = () => {
         </svg>
       </button>
       <div className="text-lg">
-        <span>1 / 12</span>
+        <span>
+          {currentCard + 1} / {filteredFlashcards.length}{" "}
+        </span>
       </div>
-      <button>
+      <button onClick={() => handleNavigation("next")}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.2}
           stroke="currentColor"
-          className="text-primary hover:text-primary-dark h-14 w-14"
-        >
+          className="text-primary hover:text-primary-dark h-14 w-14">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
