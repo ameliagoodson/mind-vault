@@ -1,15 +1,13 @@
-import Flashcard from "../Flashcards/Flashcard";
-import FlashcardNavigation from "../Flashcards/FlashcardNavigation";
+import { FlashcardNavigation } from "../Flashcards/FlashcardNavigation";
 import {
   FlashcardCategoriesBtns,
   FlashcardCategoriesBtnsBlock,
-} from "../Flashcards/FlashcardCategoriesBtns";
+} from "../../components/FlashcardCategoriesBtns";
 import FlashcardSet from "../Flashcards/FlashcardSet";
 import { useParams } from "react-router";
 import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 import useFlashcards from "../Flashcards/useFlashcards";
-import useLog from "../../hooks/useLog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // how do we get here? click on study
 // shows list of categories to study "click to study"
@@ -31,10 +29,18 @@ const StudyUI = () => {
   const { flashcards, setFlashcards, categoriesList } = useFetchFlashcards();
   const { isFlipped, setIsFlipped } = useFlashcards();
   const [currentCard, setCurrentCard] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
 
   const handleCurrentCardChange = (index) => {
     setCurrentCard(index);
   };
+
+  useEffect(() => {
+    // Reset `isFinished` whenever the user navigates to this page
+    setIsFinished(false);
+  }, []);
+
+  const getFinalScore = () => {};
 
   return (
     <div className="studyui container mx-auto flex h-full max-h-full max-w-5xl flex-col overflow-hidden bg-gray-50 p-6">
@@ -66,21 +72,28 @@ const StudyUI = () => {
             Studying: {category}
           </h1>
           <div className="studyui-flashcard-ui flex h-full flex-1 flex-col overflow-hidden">
-            <FlashcardSet
-              category={category}
-              studyMode={true}
-              type={"single"}
-              setIsFlipped={setIsFlipped}
-              isFlipped={isFlipped}
-              handleCurrentCardChange={handleCurrentCardChange}
-              currentCard={currentCard}
-              setCurrentCard={setCurrentCard}
-            />
-            {flashcards.length > 0 && (
-              <FlashcardNavigation
-                currentCard={currentCard}
-                setCurrentCard={setCurrentCard}
-              />
+            {!isFinished ? (
+              <>
+                <FlashcardSet
+                  category={category}
+                  studyMode={true}
+                  type={"single"}
+                  setIsFlipped={setIsFlipped}
+                  isFlipped={isFlipped}
+                  handleCurrentCardChange={handleCurrentCardChange}
+                  currentCard={currentCard}
+                  setCurrentCard={setCurrentCard}
+                />
+                {flashcards.length > 0 && (
+                  <FlashcardNavigation
+                    currentCard={currentCard}
+                    setCurrentCard={setCurrentCard}
+                    setIsFinished={setIsFinished}
+                  />
+                )}
+              </>
+            ) : (
+              <h1>you've finished</h1>
             )}
           </div>
         </>

@@ -79,6 +79,8 @@ const Flashcard = ({
   const handleSaveSuccess = () => {
     setIsSaved(true);
   };
+
+  useLog(isFlipped, "isflipped from flashcard");
   return (
     <div
       className={classNames("flashcard relative", {
@@ -86,7 +88,12 @@ const Flashcard = ({
         "flashcard-modal": type === "modal",
         "flashcard-single": type === "single",
       })}
-      onClick={() => setIsFlipped()}>
+      onClick={() => {
+        setIsFlipped((prev) => ({
+          ...prev,
+          [flashcard.id]: !prev[flashcard.id],
+        }));
+      }}>
       {isEditing ? (
         <>
           <FlashcardForm
@@ -107,7 +114,7 @@ const Flashcard = ({
             {!isFlipped ? (
               // FRONT OF FLASHCARD
               <div className="flex h-full flex-col items-center justify-center">
-                <p className="question max-w-full text-center text-3xl">
+                <p className="question max-w-full text-center text-xl">
                   {flashcardData.question || placeholders.question}
                 </p>
               </div>
@@ -166,7 +173,7 @@ const Flashcard = ({
             />
 
             {/* SAVE */}
-            <SaveButton
+            {/* <SaveButton
               onClick={async () => {
                 setIsLoading(true);
                 const dataToSave = {
@@ -183,7 +190,7 @@ const Flashcard = ({
               }}
               isSaved={isSaved}
               isLoading={isLoading}
-            />
+            /> */}
             {/* DELETE */}
             <Button
               onClick={() => deleteFlashcard(id, user)}

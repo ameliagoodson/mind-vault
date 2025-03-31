@@ -18,7 +18,7 @@ const FlashcardsAll = () => {
             flashcard={card}
             deleteFlashcard={deleteFlashcard}
             type={"small"}
-            isFlipped={isFlipped}
+            isFlipped={isFlipped[card.id] || false}
             setIsFlipped={setIsFlipped}
           />
         ))}

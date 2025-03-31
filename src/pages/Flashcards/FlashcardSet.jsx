@@ -3,7 +3,7 @@ import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 import Flashcard from "./Flashcard";
 import { useParams } from "react-router";
 import useLog from "../../hooks/useLog";
-import { FlashcardCategoriesBtns } from "./FlashcardCategoriesBtns";
+import { FlashcardCategoriesBtns } from "../../components/FlashcardCategoriesBtns.jsx";
 import { useFilterFlashcards } from "../../hooks/useFilterFlashcards.js";
 import useFlashcards from "./useFlashcards.jsx";
 
@@ -34,13 +34,12 @@ const FlashcardSet = ({
 
           {filteredFlashcards
             ? filteredFlashcards.map((card, index) => {
-                console.log(`🃏 Mapping flashcard #${index + 1}:`, card);
                 return (
                   <Flashcard
                     key={card.id}
                     flashcard={card}
                     type={"small"}
-                    isFlipped={isFlipped}
+                    isFlipped={isFlipped[card.id] || false}
                     setIsFlipped={setIsFlipped}
                     deleteFlashcard={deleteFlashcard}
                   />
@@ -54,7 +53,7 @@ const FlashcardSet = ({
         <Flashcard
           flashcard={filteredFlashcards[currentCard]}
           type={"single"}
-          isFlipped={isFlipped}
+          isFlipped={isFlipped[filteredFlashcards[currentCard]?.id] || false}
           setIsFlipped={setIsFlipped}
           deleteFlashcard={deleteFlashcard}
         />

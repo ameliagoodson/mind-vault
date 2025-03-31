@@ -17,7 +17,7 @@ const ManualFlashcardCreator = () => {
     {
       question: "",
       answer: "",
-      category: "",
+      category: [],
       code: "",
     },
   ]);
@@ -31,21 +31,21 @@ const ManualFlashcardCreator = () => {
       {
         question: "",
         answer: "",
-        category: "",
+        category: [],
         code: "",
       },
     ]);
     setIsSaved(false);
   };
 
-  // DELETE CARD
+  // DELETE CARD FROM UI (CARD IS NOT YET CREATED IN DATABASE)
   const deleteCard = (card, targetIndex) => {
     setFlashcards(flashcards.filter((_, index) => index !== targetIndex));
   };
 
   const handleSave = async () => {
     toggleLoading(true);
-
+    console.log("from manualflashcard before saveflashcard: ", flashcards); // no category
     try {
       // Wait for the save operation to complete
       await saveFlashcard(flashcards, user);
@@ -64,8 +64,8 @@ const ManualFlashcardCreator = () => {
   const updateFlashcard = (index, value, field) => {
     const newFlashcards = getUpdatedFlashcards(index, value, field);
     console.log("Updated flashcards array:", newFlashcards);
-
     setFlashcards(newFlashcards);
+    setIsSaved(false);
   };
 
   const getUpdatedFlashcards = (index, value, field) => {

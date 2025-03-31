@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import Button from "../../components/Button";
 import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 import FlashcardsAll from "./FlashcardsAll";
-import { FlashcardCategoriesBtns } from "./FlashcardCategoriesBtns";
+import { FlashcardCategoriesBtns } from "../../components/FlashcardCategoriesBtns";
 
 const GetAllFlashcards = () => {
   const { category } = useParams();

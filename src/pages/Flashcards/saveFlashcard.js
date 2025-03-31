@@ -20,10 +20,6 @@ const saveFlashcard = async (flashcards, user) => {
   }
 
   for (const flashcard of flashcards) {
-    // console.log("Checking flashcard.id:", flashcard.id);
-    // console.log("typeof flashcard.id:", typeof flashcard.id);
-    // console.log("Is falsy?", !flashcard.id);
-
     // Check if this flashcard has an ID (meaning it exists in Firestore)
     if (flashcard.id && flashcard.id.length > 0) {
       try {

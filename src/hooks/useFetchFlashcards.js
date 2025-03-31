@@ -73,6 +73,15 @@ export const useFetchFlashcards = () => {
       console.error("❌ Error deleting flashcard:", error);
     }
   };
+
+  const getCategoryLength = (cat) => {
+    const catLength = flashcards.filter(
+      (flashcard) =>
+        Array.isArray(flashcard.category) && flashcard.category.includes(cat),
+    ).length;
+    return catLength;
+  };
+
   return {
     user,
     flashcards,
@@ -82,5 +91,6 @@ export const useFetchFlashcards = () => {
     setCategoriesList,
     categoriesList,
     deleteFlashcard,
+    getCategoryLength,
   };
 };

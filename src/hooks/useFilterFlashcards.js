@@ -3,7 +3,7 @@ import { useFetchFlashcards } from "./useFetchFlashcards";
 import Flashcard from "../pages/Flashcards/Flashcard";
 import { useParams } from "react-router";
 import useLog from "./useLog";
-import { FlashcardCategoriesBtns } from "../pages/Flashcards/FlashcardCategoriesBtns";
+import { FlashcardCategoriesBtns } from "../components/FlashcardCategoriesBtns";
 
 export const useFilterFlashcards = (category) => {
   const { flashcards } = useFetchFlashcards();

@@ -27,3 +27,6 @@ dist-ssr
 build/
 dist/
 .env
+
+# Ignore CLAUDE.md
+CLAUDE.md

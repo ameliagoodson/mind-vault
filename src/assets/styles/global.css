@@ -114,7 +114,10 @@ Secondary: Used for backgrounds, subtle UI elements.
     @apply mt-4 flex max-w-fit min-w-24 items-center justify-center rounded-2xl px-3 py-1.5 font-semibold shadow-md transition-colors duration-300 hover:cursor-pointer;
   }
   .btn-disabled {
-    @apply bg-slate-300 text-white hover:cursor-not-allowed;
+    @apply cursor-not-allowed bg-slate-300 text-white;
+  }
+  .icon-disabled {
+    @apply cursor-not-allowed text-slate-300;
   }
   .btn.btn-active {
     @apply bg-primary-dark text-white;

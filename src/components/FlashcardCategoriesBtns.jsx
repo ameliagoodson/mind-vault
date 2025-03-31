@@ -1,9 +1,10 @@
-import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
-import Button from "../../components/Button";
+import { useFetchFlashcards } from "../hooks/useFetchFlashcards";
+import Button from "./Button";
 import { Link, useParams } from "react-router";
 
 const FlashcardCategoriesBtns = ({ basePath = "/flashcards" }) => {
-  const { categoriesList } = useFetchFlashcards();
+  const { flashcards, categoriesList, getCategoryLength } =
+    useFetchFlashcards();
   const { category } = useParams();
 
   return (
@@ -15,7 +16,11 @@ const FlashcardCategoriesBtns = ({ basePath = "/flashcards" }) => {
       {categoriesList.map((cat, index) => (
         <Button
           key={index}
-          btntext={cat}
+          btntext={
+            getCategoryLength(cat) > 1
+              ? `${cat}: ${getCategoryLength(cat)} cards`
+              : `${cat}: ${getCategoryLength(cat)} card`
+          }
           cssClasses={`btn ${cat === category ? "btn-active" : "btn-primary"}`}
           to={`${basePath}/${cat}`}
         />
@@ -25,7 +30,9 @@ const FlashcardCategoriesBtns = ({ basePath = "/flashcards" }) => {
 };
 
 const FlashcardCategoriesBtnsBlock = ({ basePath = "/study" }) => {
-  const { flashcards, categoriesList } = useFetchFlashcards();
+  const { flashcards, categoriesList, getCategoryLength } =
+    useFetchFlashcards();
+
   // Debugging: Check for undefined categories
   flashcards.forEach((flashcard, index) => {
     if (!flashcard.category) {
@@ -46,8 +53,8 @@ const FlashcardCategoriesBtnsBlock = ({ basePath = "/study" }) => {
       </Link>
       {/* Category Buttons */}
       {categoriesList.length > 0 &&
-        categoriesList.map(
-          (cat) =>
+        categoriesList.map((cat) => {
+          return (
             cat && (
               <Link
                 key={cat}
@@ -55,19 +62,14 @@ const FlashcardCategoriesBtnsBlock = ({ basePath = "/study" }) => {
                 className="block rounded-lg bg-purple-500 py-4 text-center text-lg font-semibold text-white shadow-md transition hover:bg-purple-600">
                 {cat} <br />
                 <span className="text-sm font-normal">
-                  (
-                  {
-                    flashcards.filter(
-                      (flashcard) =>
-                        Array.isArray(flashcard.category) &&
-                        flashcard.category.includes(cat),
-                    ).length
-                  }{" "}
-                  cards)
+                  {getCategoryLength(cat) > 1
+                    ? `${getCategoryLength(cat)} cards`
+                    : `${getCategoryLength(cat)} card`}
                 </span>
               </Link>
-            ),
-        )}
+            )
+          );
+        })}
     </div>
   );
 };

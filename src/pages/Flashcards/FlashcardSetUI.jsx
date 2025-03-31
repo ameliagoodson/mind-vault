@@ -3,7 +3,7 @@ import { useFetchFlashcards } from "../../hooks/useFetchFlashcards";
 import Flashcard from "./Flashcard";
 import { useParams } from "react-router";
 import useLog from "../../hooks/useLog";
-import { FlashcardCategoriesBtns } from "./FlashcardCategoriesBtns";
+import { FlashcardCategoriesBtns } from "../../components/FlashcardCategoriesBtns";
 import FlashcardSet from "./FlashcardSet";
 import useFlashcards from "./useFlashcards";
 import { useFilterFlashcards } from "../../hooks/useFilterFlashcards";

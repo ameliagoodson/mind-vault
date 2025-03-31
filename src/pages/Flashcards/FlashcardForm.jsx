@@ -1,18 +1,16 @@
 import useFlashcards from "./useFlashcards";
-import saveFlashcard from "./saveFlashcard";
 import Button from "../../components/Button";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import CodeEditor from "../../components/CodeEditor.jsx";
 import useToggle from "../../hooks/useToggle.js";
-import processCategories from "../../utils/processCategories";
-import { MdCode, MdAbc, MdSave, MdDelete } from "react-icons/md";
+import { MdCode, MdAbc, MdDelete } from "react-icons/md";
 import useLog from "../../hooks/useLog.js";
 import SaveButton from "../../components/SaveButton.jsx";
 import LoadingSpinnerLarge from "../../components/LoadingSpinnerLarge.jsx";
-import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { useFetchFlashcards } from "../../hooks/useFetchFlashcards.js";
+import { handleSaveFlashcard } from "./handleSaveFlashcard.js";
 
 const FlashcardForm = ({
   flashcard,
@@ -24,7 +22,6 @@ const FlashcardForm = ({
   deleteCard,
   showDeleteButton,
 }) => {
-  const { setFlashcards } = useFetchFlashcards();
   const { editedFlashcard, setEditedFlashcard, isSaved } = useFlashcards();
 
   const { user } = useAuth();
@@ -33,83 +30,24 @@ const FlashcardForm = ({
   const [showCodeSection, toggleCode] = useToggle(false);
   const [codeMode, toggleCodeMode] = useToggle(false);
   const [isLoading, toggleLoading] = useToggle(false);
+  const { categoriesList } = useFetchFlashcards();
 
-  const categoryOptions = [
-    { value: "Javascript", label: "JavaScript" },
-    { value: "React", label: "React" },
-    { value: "Spot the Bug", label: "Spot the Bug" },
-    { value: "French", label: "French" },
-  ];
   const [isClearable, setIsClearable] = useState(true);
   const [isSearchable, setIsSearchable] = useState(true);
 
-  useLog(editedFlashcard, "editedFlashcard is changing");
+  useLog(editedFlashcard, "editedFlashcard is changing in flashcardForm");
 
   // Initialize editedFlashcard with current flashcard data
   useEffect(() => {
     if (flashcard) {
-      // console.log("Setting editedFlashcard with:", flashcard);
-
       setEditedFlashcard({
         question: flashcard.question || "",
         answer: flashcard.answer || "",
-        category: flashcard.category || "",
+        category: flashcard.category || [],
         code: flashcard.code || "",
       });
     }
   }, [flashcard]);
-
-  const handleSaveFlashcard = async () => {
-    toggleLoading(true);
-
-    try {
-      const categoryToUse =
-        editedFlashcard.category || flashcard?.category || "";
-
-      let processedCategories = [];
-      if (categoryToUse) {
-        processedCategories = processCategories(categoryToUse);
-      }
-
-      const updatedFlashcard = {
-        id: flashcard?.id,
-        question: editedFlashcard.question || flashcard?.question || "",
-        answer: editedFlashcard.answer || flashcard?.answer || "",
-        category: processedCategories,
-        code: editedFlashcard.code || flashcard?.code || "",
-      };
-
-      const saveData = {
-        ...updatedFlashcard,
-        category: processedCategories,
-      };
-
-      // Log to confirm ID is included
-      console.log("Saving flashcard with ID:", saveData.id);
-
-      // Await the save to database
-      await saveFlashcard([saveData], user);
-
-      // Update the parent component's state with the new values
-      if (updateFlashcard) {
-        console.log("Updating parent component with:", updatedFlashcard);
-        updateFlashcard(updatedFlashcard);
-        handleSaveSuccess();
-      }
-
-      console.log("✅ Flashcard saved & exiting Edit Mode.");
-    } catch (error) {
-      console.error("Error saving flashcard:", error);
-    } finally {
-      // Always run this code whether the save succeeds or fails
-      toggleLoading(false);
-
-      // Exit edit mode if needed
-      if (toggleEditing) {
-        toggleEditing(false);
-      }
-    }
-  };
 
   return (
     <div className="flashcard-form p-4">
@@ -179,6 +117,7 @@ const FlashcardForm = ({
             className="textarea textarea-long mb-0"
             value={editedFlashcard?.answer || ""}
             onChange={(event) => {
+              console.log("I'm changing the answr");
               setEditedFlashcard((prev) => ({
                 ...prev,
                 answer: event.target.value,
@@ -219,24 +158,32 @@ const FlashcardForm = ({
           <label className="mb-2 text-lg">Categories</label>
 
           <CreatableSelect
-            options={categoryOptions}
             isClearable={isClearable}
             isSearchable={isSearchable}
-            defaultValue={editedFlashcard.category?.map((cat) => ({
-              value: cat,
-              label: cat,
-            }))}
+            options={
+              categoriesList?.map((cat) => ({ value: cat, label: cat })) || []
+            }
+            value={
+              editedFlashcard.category?.map((cat) => ({
+                value: cat,
+                label: cat,
+              })) || []
+            }
             isMulti
             onChange={(event) => {
-              setEditedFlashcard((prev) => {
-                return {
-                  ...prev,
-                  category: Array.isArray(event) ? event : [event], // always return an array
-                };
-              });
+              setEditedFlashcard((prev) => ({
+                ...prev,
+                category: Array.isArray(event)
+                  ? event.map((cat) => cat.value)
+                  : [],
+              }));
               // ALSO update parent component's state if updateFlashcard exists
               if (updateFlashcard && index !== undefined) {
-                updateFlashcard(index, event.value, "category");
+                // loop through the array and get the value property only and add it a new array to pass
+                updateFlashcard(
+                  index,
+                  event.map((catObject) => catObject.value, "category"),
+                );
               }
             }}
           />
@@ -268,7 +215,17 @@ const FlashcardForm = ({
       {!hideSaveButton && (
         <div className="btn-container flex gap-4">
           <SaveButton
-            onClick={handleSaveFlashcard}
+            onClick={() =>
+              handleSaveFlashcard({
+                editedFlashcard,
+                flashcard,
+                user,
+                updateFlashcard,
+                handleSaveSuccess,
+                toggleLoading,
+                toggleEditing,
+              })
+            }
             isLoading={isLoading}
             isSaved={isSaved}
           />
